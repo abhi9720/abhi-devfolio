@@ -102,6 +102,7 @@
             animation: {
               spotlight: "spotlight 2s ease .75s 1 forwards",
               spin: 'spin 1s linear infinite',
+              shine: 'shine 1.2s ease-out',
             },
             keyframes: {
               spotlight: {
@@ -113,6 +114,10 @@
                   opacity: 1,
                   transform: "translate(-50%,-40%) scale(1)",
                 },
+              },
+              shine: {
+                'from': { transform: 'translateX(-100%) skewX(-15deg)' },
+                'to': { transform: 'translateX(125%) skewX(-15deg)' },
               },
             },
           }

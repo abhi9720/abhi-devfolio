@@ -1,37 +1,34 @@
 import React from 'react';
 import { EXPERIENCES, EDUCATION } from '../constants';
-import type { Experience } from '../types';
 
 const SectionHeader: React.FC<{ title: string }> = ({ title }) => (
-    <div className="sticky top-0 z-10 py-4 mb-4 bg-slate-50/75 dark:bg-slate-900/75 backdrop-blur lg:static lg:mb-0 lg:py-0 lg:bg-transparent">
-        <h2 className="text-sm font-bold uppercase tracking-widest bg-gradient-to-r from-slate-900 to-blue-600 dark:from-slate-200 dark:to-blue-500 text-transparent bg-clip-text lg:sr-only">{title}</h2>
+    <div className="sticky top-0 z-10 py-4 mb-8 bg-slate-50/75 dark:bg-slate-900/75 backdrop-blur lg:hidden">
+        <h2 className="text-sm font-bold uppercase tracking-widest text-slate-900 dark:text-slate-200">{title}</h2>
     </div>
 );
 
-
-const ExperienceCard: React.FC<{ item: Experience }> = ({ item }) => (
-    <div className="group relative grid pb-1 transition-all sm:grid-cols-8 sm:gap-8 md:gap-4 lg:hover:!opacity-100 lg:group-hover/list:opacity-50">
-        <div className="absolute -inset-x-4 -inset-y-4 z-0 hidden rounded-md transition-all duration-300 motion-reduce:transition-none lg:block lg:group-hover:bg-slate-100/75 dark:lg:group-hover:bg-slate-800/50 lg:group-hover:shadow-md dark:lg:group-hover:shadow-[inset_0_1px_0_0_rgba(148,163,184,0.1)] lg:group-hover:drop-shadow-lg"></div>
-        <header className="z-10 mb-2 mt-1 text-xs font-semibold uppercase tracking-wide text-slate-500 sm:col-span-2">
-            {item.period}
-        </header>
-        <div className="z-10 sm:col-span-6">
-            <h3 className="font-medium leading-snug text-slate-900 dark:text-slate-200">
-                <div className="inline-flex items-baseline font-medium leading-tight text-slate-800 dark:text-slate-200 group-hover:text-blue-600 dark:group-hover:text-blue-400 focus-visible:text-blue-600 dark:focus-visible:text-blue-400 text-base">
-                    {item.role} · {item.company}
-                </div>
-            </h3>
-            <p className="mt-2 text-sm leading-normal text-slate-500">
-                {item.location}
-            </p>
-            <ul className="mt-2 space-y-2 list-disc list-inside text-slate-600 dark:text-slate-400">
-                {item.description.map((desc, index) => (
-                    <li key={index}>{desc}</li>
+const ExperienceTimeline: React.FC = () => {
+    return (
+        <div className="relative border-l-2 border-slate-300 dark:border-slate-700 ml-4">
+            <div className="space-y-12 pl-10 py-4">
+                {EXPERIENCES.map((exp, index) => (
+                    <div key={index} className="relative group">
+                        {/* Dot on the timeline */}
+                        <div className="absolute -left-[48px] top-1 w-5 h-5 bg-slate-50 dark:bg-slate-900 rounded-full border-4 border-slate-300 dark:border-slate-600 group-hover:border-blue-500 transition-colors duration-300"></div>
+                        
+                        {/* Content */}
+                        <div className="transition-transform duration-300 transform group-hover:-translate-y-1">
+                             <p className="text-xs font-semibold uppercase text-slate-500 dark:text-slate-400 tabular-nums">{exp.period}</p>
+                            <h3 className="font-bold text-lg text-slate-800 dark:text-slate-200 mt-1 group-hover:text-blue-500 dark:group-hover:text-blue-400 transition-colors">{exp.company}</h3>
+                            <p className="text-md font-semibold text-slate-600 dark:text-slate-300">{exp.role}</p>
+                            <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed mt-3">{exp.summary}</p>
+                        </div>
+                    </div>
                 ))}
-            </ul>
+            </div>
         </div>
-    </div>
-);
+    );
+};
 
 
 const Experience: React.FC = () => {
@@ -43,27 +40,31 @@ const Experience: React.FC = () => {
                 </div>
                 <div className="lg:col-span-3">
                     <SectionHeader title="Experience" />
-                    <ol className="group/list space-y-12">
-                        {EXPERIENCES.map((exp, index) => (
-                            <li key={index}>
-                                <ExperienceCard item={exp} />
-                            </li>
-                        ))}
-                    </ol>
+                    
+                    <ExperienceTimeline />
+
                     <div className="mt-16">
-                        <h3 className="text-lg font-bold text-slate-800 dark:text-slate-200 mb-4 uppercase tracking-wider bg-gradient-to-r from-slate-900 to-blue-500 dark:from-slate-200 dark:to-blue-500 text-transparent bg-clip-text">Education</h3>
-                        <div className="group relative grid pb-1 transition-all sm:grid-cols-8 sm:gap-8 md:gap-4">
-                            <div className="absolute -inset-x-4 -inset-y-4 z-0 hidden rounded-md lg:block bg-slate-100 dark:bg-slate-800/50"></div>
-                            <header className="z-10 mb-2 mt-1 text-xs font-semibold uppercase tracking-wide text-slate-500 sm:col-span-2" aria-label="2023">
-                                {EDUCATION.graduationYear}
-                            </header>
-                            <div className="z-10 sm:col-span-6">
-                                <h3 className="font-medium leading-snug text-slate-800 dark:text-slate-200">
-                                    {EDUCATION.degree}
-                                </h3>
-                                <p className="mt-2 text-sm leading-normal text-slate-500">
-                                    {EDUCATION.institution}
-                                </p>
+                        <h3 className="text-lg font-bold text-slate-800 dark:text-slate-200 mb-6 uppercase tracking-wider bg-gradient-to-r from-slate-900 to-blue-500 dark:from-slate-200 dark:to-blue-500 text-transparent bg-clip-text">Education</h3>
+                        <div className="p-6 rounded-lg bg-white dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700/50 shadow-sm transition-all duration-300 hover:shadow-md hover:border-slate-300 dark:hover:border-slate-600">
+                            <div className="flex justify-between items-start gap-4">
+                                <div>
+                                    <h4 className="font-bold text-lg text-slate-900 dark:text-slate-100">{EDUCATION.institution}</h4>
+                                    <p className="text-md text-slate-600 dark:text-slate-300">{EDUCATION.degree}</p>
+                                </div>
+                                <div className="text-right flex-shrink-0">
+                                    <p className="text-sm font-semibold text-slate-500 dark:text-slate-400 tabular-nums">{EDUCATION.period}</p>
+                                    <p className="text-sm font-bold text-blue-600 dark:text-blue-400 mt-1">{EDUCATION.cgpa}</p>
+                                </div>
+                            </div>
+                            <div className="mt-4 pt-4 border-t border-slate-200/80 dark:border-slate-700/50">
+                                <p className="text-sm font-semibold text-slate-700 dark:text-slate-300 mb-3">Relevant Coursework:</p>
+                                <div className="flex flex-wrap gap-2">
+                                    {EDUCATION.coursework.map(course => (
+                                        <span key={course} className="px-3 py-1 text-xs font-medium rounded-full bg-slate-200/80 dark:bg-slate-900/70 border border-slate-300/80 dark:border-slate-700 text-slate-700 dark:text-slate-300">
+                                            {course}
+                                        </span>
+                                    ))}
+                                </div>
                             </div>
                         </div>
                     </div>

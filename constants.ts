@@ -68,6 +68,7 @@ export const EXPERIENCES: Experience[] = [
       'Developed a real-time gamification engine and ILT attendance system processing 50K+ daily API calls using Go, Kafka, and Redis.',
       'Designed a secure RBAC system using Spring Security and industry design patterns.',
     ],
+    summary: 'Built scalable Java microservices for 100K+ daily requests and a real-time gamification engine with Go & Kafka. Optimized latency by 35% using Redis and designed a secure RBAC system.',
   },
   {
     role: 'Associate Software Engineer',
@@ -78,6 +79,7 @@ export const EXPERIENCES: Experience[] = [
       'Created a distributed async task system using Go, Redis, Asynq, integrated DLQ handling and monitoring via Prometheus.',
       'Deployed the system on Kubernetes with auto-scaling, achieving 99.9% success rate.',
     ],
+    summary: 'Developed a resilient, distributed async task system in Go with Redis and Asynq, deployed on Kubernetes. Achieved 99.9% reliability with integrated monitoring via Prometheus and DLQ handling.',
   },
   {
     role: 'Software Engineer Intern',
@@ -89,6 +91,7 @@ export const EXPERIENCES: Experience[] = [
       'Migrated Oracle SQL workloads to SQL Server, improving execution by 30%.',
       'Deployed services on AWS (EC2, RDS, S3, VPC) ensuring high uptime.',
     ],
+    summary: 'Boosted Spring Boot API performance by 25% via Hibernate caching and optimized database workloads by 30% through SQL migration. Deployed and managed highly available services on AWS.',
   },
 ];
 
@@ -204,8 +207,10 @@ export const SKILL_CATEGORIES: CategorizedSkillGroup[] = [
 
 export const EDUCATION = {
   degree: 'B.Tech in Computer Science & Engineering',
-  institution: 'National Institute of Technology (NIT), Manipur',
-  graduationYear: '2023',
+  institution: 'National Institute of Technology, Manipur',
+  period: '2019 – 2023',
+  cgpa: '8.8 CGPA',
+  coursework: ['Algorithms', 'Databases', 'Operating Systems', 'Computer Networks', 'Machine Learning'],
 };
 
 
@@ -261,5 +266,7 @@ He actively writes technical articles on Medium and DEV.to. You can find his lat
 ### Education
 - **Degree**: ${EDUCATION.degree}
 - **Institution**: ${EDUCATION.institution}
-- **Graduation Year**: ${EDUCATION.graduationYear}
+- **Period**: ${EDUCATION.period}
+- **CGPA**: ${EDUCATION.cgpa}
+- **Coursework**: ${EDUCATION.coursework.join(', ')}
 `;

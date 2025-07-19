@@ -12,6 +12,7 @@ export interface Experience {
   period: string;
   location: string;
   description: string[];
+  summary: string;
 }
 
 export interface Project {

@@ -46,7 +46,7 @@ const AIChatWindow: React.FC<AIChatWindowProps> = ({ isOpen, onClose, isFullScre
                 console.error("Failed to parse chat history:", e);
             }
         }
-        return [{ sender: 'ai', text: "Hello! I'm an AI assistant. Feel free to ask me anything about Abhishek's experience, projects, or skills." }];
+        return [{ sender: 'ai', text: "Hello! You can ask me anything about my experience, projects, or skills. What would you like to know?" }];
     });
 
     const toggleFullScreen = () => setIsFullScreen(prev => !prev);
