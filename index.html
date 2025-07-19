@@ -4,25 +4,32 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     
+    <!-- PWA & SEO Enhancements -->
+    <link rel="manifest" href="/manifest.json" />
+    <meta name="theme-color" content="#0f172a" />
+    <link rel="apple-touch-icon" href="/public/icon.svg" />
+    <link rel="icon" type="image/svg+xml" href="/public/icon.svg">
+
+
     <!-- SEO Meta Tags -->
     <title>Abhishek Tiwari - Backend-leaning Full-Stack Software Engineer</title>
-    <meta name="description" content="Professional portfolio for Abhishek 'Abhi' Tiwari, a backend-leaning full-stack software engineer specializing in Golang, Java, Spring Boot, and cloud technologies." />
-    <meta name="keywords" content="Abhishek Tiwari, Abhi Tiwari, Full-Stack Engineer, Backend Engineer, Golang, Java, Spring Boot, React, Portfolio, Software Engineer" />
+    <meta name="description" content="Professional PWA portfolio for Abhishek 'Abhi' Tiwari, a backend-leaning full-stack software engineer specializing in Golang, Java, Spring Boot, and cloud technologies. Features an interactive AI assistant." />
+    <meta name="keywords" content="Abhishek Tiwari, Abhi Tiwari, Full-Stack Engineer, Backend Engineer, Golang, Java, Spring Boot, React, Portfolio, Software Engineer, PWA, AI Assistant" />
     <meta name="author" content="Abhishek 'Abhi' Tiwari" />
-    <link rel="canonical" href="https://abhi9720.netlify.app/" />
+    <link rel="canonical" href="https://abhi9720-dev.netlify.app/" />
 
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website" />
-    <meta property="og:url" content="https://abhi9720.netlify.app/" />
+    <meta property="og:url" content="https://abhi9720-dev.netlify.app/" />
     <meta property="og:title" content="Abhishek Tiwari - Backend-leaning Full-Stack Software Engineer" />
-    <meta property="og:description" content="Explore the portfolio of Abhishek Tiwari, showcasing projects in backend development, AI, and full-stack engineering." />
+    <meta property="og:description" content="Explore the PWA portfolio of Abhishek Tiwari, showcasing projects in backend development, AI, and full-stack engineering, complete with an AI career assistant." />
     <meta property="og:image" content="https://avatars.githubusercontent.com/u/68281476?v=4" />
 
     <!-- Twitter -->
     <meta property="twitter:card" content="summary_large_image" />
-    <meta property="twitter:url" content="https://abhi9720.netlify.app/" />
+    <meta property="twitter:url" content="https://abhi9720-dev.netlify.app/" />
     <meta property="twitter:title" content="Abhishek Tiwari - Backend-leaning Full-Stack Software Engineer" />
-    <meta property="twitter:description" content="Explore the portfolio of Abhishek Tiwari, showcasing projects in backend development, AI, and full-stack engineering." />
+    <meta property="twitter:description" content="Explore the PWA portfolio of Abhishek Tiwari, showcasing projects in backend development, AI, and full-stack engineering, complete with an AI career assistant." />
     <meta property="twitter:image" content="https://avatars.githubusercontent.com/u/68281476?v=4" />
 
     <script src="https://cdn.tailwindcss.com"></script>
@@ -157,7 +164,7 @@
         }
       }
     </script>
-  <script type="importmap">
+    <script type="importmap">
 {
   "imports": {
     "react": "https://esm.sh/react@^19.1.0",
@@ -166,16 +173,54 @@
     "@google/genai": "https://esm.sh/@google/genai",
     "react-github-calendar": "https://esm.sh/react-github-calendar@^4.1.5",
     "jspdf": "https://esm.sh/jspdf@2.5.1",
-    "html2canvas": "https://esm.sh/html2canvas@1.4.1",
     "react-router-dom": "https://esm.sh/react-router-dom@^6.24.1",
     "react-icons/": "https://esm.sh/react-icons@5.2.1/"
   }
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Person",
+  "name": "Abhishek Tiwari",
+  "alternateName": "Abhi Tiwari",
+  "url": "https://abhi9720-dev.netlify.app/",
+  "image": "https://avatars.githubusercontent.com/u/68281476?v=4",
+  "jobTitle": "Backend-leaning Full-Stack Software Engineer",
+  "worksFor": [
+    {
+      "@type": "Organization",
+      "name": "PeopleStrong"
+    },
+    {
+      "@type": "Organization",
+      "name": "Imperva"
+    },
+    {
+      "@type": "Organization",
+      "name": "Nagarro"
+    }
+  ],
+  "alumniOf": {
+    "@type": "CollegeOrUniversity",
+    "name": "National Institute of Technology, Manipur"
+  },
+  "knowsAbout": ["Golang", "Java", "Spring Boot", "Distributed Systems", "Cloud Architecture", "React", "Backend Development", "Full-Stack Development", "Kubernetes", "Microservices"],
+  "sameAs": [
+    "https://github.com/abhi9720",
+    "https://linkedin.com/in/abhi9720",
+    "mailto:abhishek.nitmn@gmail.com",
+    "https://leetcode.com/abhi9720",
+    "https://dev.to/abhi9720",
+    "https://medium.com/@Abhishektiwari"
+  ]
 }
 </script>
 <link rel="stylesheet" href="/index.css">
 </head>
   <body class="antialiased">
     <div id="root"></div>
+    <script type="module" src="./index.tsx"></script>
   <script type="module" src="/index.tsx"></script>
 </body>
 </html>

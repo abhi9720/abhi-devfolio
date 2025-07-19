@@ -12,6 +12,7 @@ import GitHubActivity from './components/GitHubActivity';
 import { useTheme } from './contexts/ThemeContext';
 import AIAssistantButton from './components/AIAssistantButton';
 import AIChatModal from './components/AIChatModal';
+import ThemeToggle from './components/ThemeToggle';
 
 const App: React.FC = () => {
   const [coords, setCoords] = useState({ x: -1000, y: -1000 });
@@ -58,6 +59,7 @@ const App: React.FC = () => {
           background: `radial-gradient(600px at ${coords.x}px ${coords.y}px, ${theme === 'dark' ? 'rgba(59, 130, 246, 0.15)' : 'rgba(59, 130, 246, 0.1)'}, transparent 80%)`
         }}
       ></div>
+      <ThemeToggle />
       <div className="max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-8">
         <Header activeSection={activeSection} />
         <main className="space-y-20 sm:space-y-24 md:space-y-32 pb-20">

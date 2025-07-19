@@ -1,0 +1,16 @@
+{
+  "short_name": "Abhi's Portfolio",
+  "name": "Abhishek Tiwari - AI Portfolio",
+  "description": "The professional portfolio of Abhishek Tiwari, a Backend-leaning Full-Stack Software Engineer with an integrated AI career assistant.",
+  "icons": [
+    {
+      "src": "public/icon.svg",
+      "type": "image/svg+xml",
+      "sizes": "any"
+    }
+  ],
+  "start_url": ".",
+  "display": "standalone",
+  "theme_color": "#0f172a",
+  "background_color": "#0f172a"
+}

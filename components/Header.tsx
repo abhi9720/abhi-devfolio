@@ -1,9 +1,7 @@
 import React, { useState } from 'react';
 import { PERSONAL_INFO, SOCIAL_LINKS } from '../constants';
 import ResumeModal from './ResumeModal';
-import ThemeToggle from './ThemeToggle';
 import { FiMapPin, FiDownload } from 'react-icons/fi';
-import { RiLayoutGridLine } from 'react-icons/ri';
 
 interface HeaderProps {
     activeSection: string | null;
@@ -64,7 +62,6 @@ const Header: React.FC<HeaderProps> = ({ activeSection }) => {
                                     <FiDownload className="h-4 w-4" />
                                     <span>Resume</span>
                                 </button>
-                                <ThemeToggle />
                             </div>
                         </div>
                     </div>

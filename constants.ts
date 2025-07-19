@@ -26,7 +26,7 @@ export const SOCIAL_LINKS: Link[] = [
   { name: 'GitHub', url: 'https://github.com/abhi9720', icon: React.createElement(FaGithub) },
   { name: 'LinkedIn', url: 'https://linkedin.com/in/abhi9720', icon: React.createElement(FaLinkedin) },
   { name: 'Email', url: `mailto:${PERSONAL_INFO.email}`, icon: React.createElement(HiOutlineMail) },
-  { name: 'Portfolio', url: 'https://abhi9720.netlify.app', icon: React.createElement(FiGlobe) },
+  { name: 'Portfolio', url: 'https://abhi9720-dev.netlify.app', icon: React.createElement(FiGlobe) },
   { name: 'Notes & Blog', url: 'https://abhisheks-notes.super.site', icon: React.createElement(HiOutlineDocumentText) },
   { name: 'LeetCode', url: 'https://leetcode.com/abhi9720', icon: React.createElement(SiLeetcode) },
   { name: 'DEV.to', url: 'https://dev.to/abhi9720', icon: React.createElement(FaDev) },

@@ -1,7 +1,6 @@
 import React, { useEffect, useState, useRef, useLayoutEffect, useMemo } from 'react';
 import { GoogleGenAI, Chat } from '@google/genai';
 import jsPDF from 'jspdf';
-import html2canvas from 'html2canvas';
 import { FiX, FiSend, FiDownload, FiMaximize2, FiMinimize2, FiTrash2 } from 'react-icons/fi';
 import { HiOutlineSparkles } from 'react-icons/hi';
 import { ImSpinner2 } from 'react-icons/im';
@@ -160,32 +159,68 @@ ${AI_CONTEXT_DOCUMENT}`;
     };
 
     const handleDownloadChat = async () => {
-        const chatElement = chatContainerRef.current;
-        if (!chatElement) {
-            alert("Could not find chat content to download.");
+        if (messages.length <= 1) {
+            alert("The chat is empty, nothing to download.");
             return;
         }
     
         setIsDownloading(true);
         try {
-            const theme = document.documentElement.classList.contains('dark') ? 'dark' : 'light';
-            const bgColor = theme === 'dark' ? '#0f172a' : '#f8fafc';
+            const doc = new jsPDF();
+            const pageHeight = doc.internal.pageSize.height;
+            const pageWidth = doc.internal.pageSize.width;
+            const margin = 15;
+            const maxLineWidth = pageWidth - margin * 2;
+            let y = 20;
     
-            const canvas = await html2canvas(chatElement, {
-                useCORS: true,
-                scale: 2,
-                backgroundColor: bgColor,
-            });
+            // Document Header
+            doc.setFontSize(18);
+            doc.setFont('helvetica', 'bold');
+            doc.text("AI Career Assistant Chat Log", pageWidth / 2, y, { align: 'center' });
+            y += 8;
+            
+            doc.setFontSize(10);
+            doc.setFont('helvetica', 'normal');
+            doc.setTextColor(100); // Gray color
+            doc.text(`Downloaded on: ${new Date().toLocaleString()}`, pageWidth / 2, y, { align: 'center' });
+            y += 15;
+            
+            // Separator Line
+            doc.setDrawColor(226, 232, 240); // slate-200
+            doc.line(margin, y, pageWidth - margin, y);
+            y += 10;
+            
+            // Use slice(1) to skip the initial intro message
+            for (const message of messages.slice(1)) {
+                if (y > pageHeight - margin) { // Check for page break
+                    doc.addPage();
+                    y = margin;
+                }
     
-            const imgData = canvas.toDataURL('image/png');
-            const pdf = new jsPDF({
-                orientation: 'p',
-                unit: 'px',
-                format: [canvas.width, canvas.height]
-            });
+                const isUser = message.sender === 'user';
+                const label = isUser ? "You:" : "AI Assistant:";
+                
+                // Convert markdown links to a readable format for PDFs
+                const textToRender = message.text.replace(/\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/g, '$1 ($2)');
+                const lines = doc.splitTextToSize(textToRender, maxLineWidth);
     
-            pdf.addImage(imgData, 'PNG', 0, 0, canvas.width, canvas.height);
-            pdf.save(`Abhishek_Tiwari_AI_Chat_${new Date().toISOString().slice(0, 10)}.pdf`);
+                // --- Message Sender Label ---
+                doc.setFontSize(11);
+                doc.setFont('helvetica', 'bold');
+                doc.setTextColor(isUser ? 37 : 8, isUser ? 99 : 145, isUser ? 235 : 178); // RGB for blue-600 and cyan-600
+                doc.text(label, margin, y);
+                y += 6;
+    
+                // --- Message Text ---
+                doc.setFontSize(11);
+                doc.setFont('helvetica', 'normal');
+                doc.setTextColor(15, 23, 42); // RGB for slate-900
+                
+                doc.text(lines, margin, y);
+                y += lines.length * 5 + 8; // Update y based on number of lines + padding
+            }
+            
+            doc.save(`Abhishek_Tiwari_AI_Chat_${new Date().toISOString().slice(0, 10)}.pdf`);
     
         } catch (err) {
             console.error("Failed to download chat:", err);
@@ -234,7 +269,6 @@ ${AI_CONTEXT_DOCUMENT}`;
                 <header className="flex justify-between items-center p-3 sm:p-4 border-b border-slate-200 dark:border-slate-800 flex-shrink-0 bg-white/50 dark:bg-slate-800/50">
                     <div>
                         <h2 className="text-base sm:text-lg font-bold text-slate-900 dark:text-slate-200">AI Career Assistant</h2>
-                        <p className="text-xs text-slate-500 dark:text-slate-400">Powered by Gemini</p>
                     </div>
                      <div className="flex items-center gap-1 sm:gap-2">
                         <button title="Download Chat" onClick={handleDownloadChat} disabled={isDownloading || isChatPristine} className="p-2 rounded-full text-slate-500 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed" aria-label="Download chat as PDF">
@@ -257,7 +291,7 @@ ${AI_CONTEXT_DOCUMENT}`;
                         <div key={index} className={`flex items-end gap-2.5 animate-fade-in-up ${msg.sender === 'user' ? 'justify-end' : ''}`}>
                             {msg.sender === 'ai' && <AIAvatar />}
                             <div className={`max-w-md p-3 rounded-t-2xl ${msg.sender === 'user' ? 'bg-blue-600 text-white rounded-l-2xl' : 'bg-slate-200 dark:bg-slate-700 text-slate-800 dark:text-slate-200 rounded-r-2xl'}`}>
-                                {msg.sender === 'ai' ? <MarkdownRenderer text={msg.text} /> : <p className="text-sm break-words" style={{ whiteSpace: 'pre-wrap' }}>{msg.text}</p>}
+                                {msg.sender === 'ai' ? <MarkdownRenderer text={msg.text} /> : <p className="text-sm break-words">{msg.text}</p>}
                             </div>
                             {msg.sender === 'user' && <UserAvatar />}
                         </div>

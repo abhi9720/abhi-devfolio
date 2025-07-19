@@ -8,7 +8,6 @@ import {
   isRouteErrorResponse,
 } from 'react-router-dom';
 import App from './App';
-import DashboardPage from './dashboard';
 import { ThemeProvider, useTheme } from './contexts/ThemeContext';
 
 // A generic error page to catch routing errors and rendering errors.
@@ -76,10 +75,6 @@ const router = createHashRouter([
         path: '/',
         element: <App />,
       },
-      {
-        path: '/dashboard',
-        element: <DashboardPage />,
-      },
     ],
   },
 ]);
@@ -95,3 +90,14 @@ root.render(
     <RouterProvider router={router} />
   </React.StrictMode>
 );
+
+// Register the service worker for PWA functionality
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/sw.js').then(registration => {
+      console.log('ServiceWorker registration successful with scope: ', registration.scope);
+    }, err => {
+      console.log('ServiceWorker registration failed: ', err);
+    });
+  });
+}
