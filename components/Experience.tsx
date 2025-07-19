@@ -14,7 +14,7 @@ const ExperienceTimeline: React.FC = () => {
                 {EXPERIENCES.map((exp, index) => (
                     <div key={index} className="relative group">
                         {/* Dot on the timeline */}
-                        <div className="absolute -left-[48px] top-1 w-5 h-5 bg-slate-50 dark:bg-slate-900 rounded-full border-4 border-slate-300 dark:border-slate-600 group-hover:border-blue-500 transition-colors duration-300"></div>
+                        <div className="absolute -left-[48px] top-1 w-5 h-5 bg-slate-50 dark:bg-slate-900 rounded-full border-4 border-slate-300 dark:border-slate-600 group-hover:border-blue-500 transition-all duration-300 group-hover:scale-125"></div>
                         
                         {/* Content */}
                         <div className="transition-transform duration-300 transform group-hover:-translate-y-1">

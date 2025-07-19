@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { PERSONAL_INFO, SOCIAL_LINKS } from '../constants';
-import { IconMapPin } from './icons/IconMapPin';
-import { IconDownload } from './icons/IconDownload';
 import ResumeModal from './ResumeModal';
 import ThemeToggle from './ThemeToggle';
+import { FiMapPin, FiDownload } from 'react-icons/fi';
+import { RiLayoutGridLine } from 'react-icons/ri';
 
 interface HeaderProps {
     activeSection: string | null;
@@ -39,10 +39,10 @@ const Header: React.FC<HeaderProps> = ({ activeSection }) => {
                                 {PERSONAL_INFO.title}
                             </h2>
                             <div className="flex items-center space-x-2 text-slate-500 dark:text-slate-400">
-                                <IconMapPin />
+                                <FiMapPin />
                                 <span>{PERSONAL_INFO.location}</span>
                             </div>
-                            <div className="flex items-center flex-wrap gap-4 pt-4">
+                            <div className="flex items-center flex-wrap gap-x-4 gap-y-2 pt-4">
                                 {SOCIAL_LINKS.filter(l => ['GitHub', 'LinkedIn', 'Email'].includes(l.name)).map((link) => (
                                     <a
                                         key={link.name}
@@ -53,7 +53,7 @@ const Header: React.FC<HeaderProps> = ({ activeSection }) => {
                                         className="text-slate-500 dark:text-slate-400 hover:text-blue-500 dark:hover:text-blue-400 transition-all duration-300 hover:scale-110"
                                     >
                                         <span className="sr-only">{link.name}</span>
-                                        {link.icon}
+                                        {React.cloneElement(link.icon as React.ReactElement<{ className?: string }>, { className: 'h-6 w-6' })}
                                     </a>
                                 ))}
                                 <button
@@ -61,7 +61,7 @@ const Header: React.FC<HeaderProps> = ({ activeSection }) => {
                                     className="inline-flex items-center gap-2 px-4 py-2 text-sm font-semibold border border-slate-300 dark:border-slate-600 text-slate-600 dark:text-slate-300 rounded-md hover:border-blue-500 dark:hover:border-blue-500 hover:text-blue-500 dark:hover:text-blue-400 transition-colors duration-300"
                                     aria-label="Download Resume"
                                 >
-                                    <IconDownload className="h-4 w-4" />
+                                    <FiDownload className="h-4 w-4" />
                                     <span>Resume</span>
                                 </button>
                                 <ThemeToggle />

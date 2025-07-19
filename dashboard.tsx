@@ -1,28 +1,27 @@
 import React, { useState, useMemo } from 'react';
-import ReactDOM from 'react-dom/client';
-import { ThemeProvider, useTheme } from './contexts/ThemeContext';
+import { useTheme } from './contexts/ThemeContext';
 import * as ALL_CONSTANTS from './constants';
-import * as ICONS from './constants.icons';
 import ThemeToggle from './components/ThemeToggle';
+
+import { FaGithub, FaLinkedin, FaDev, FaMedium } from 'react-icons/fa';
+import { FiGlobe, FiCode, FiCloud, FiDatabase, FiTrash2 } from 'react-icons/fi';
+import { HiOutlineMail, HiOutlineDocumentText } from 'react-icons/hi';
+import { SiLeetcode } from 'react-icons/si';
+import { BsFillDiagram3Fill } from 'react-icons/bs';
+import { RiBrainLine } from 'react-icons/ri';
+import { IconTrophy } from './components/icons/IconTrophy';
 
 const CORRECT_PASSWORD = 'admin'; // Change this password
 
-// A map of icon names to their components for dropdowns
-const ICON_MAP = {
-    IconMail: ICONS.IconMail,
-    IconGitHub: ICONS.IconGitHub,
-    IconLinkedIn: ICONS.IconLinkedIn,
-    IconGlobe: ICONS.IconGlobe,
-    IconNote: ICONS.IconNote,
-    IconLeetCode: ICONS.IconLeetCode,
-    IconDevTo: ICONS.IconDevTo,
-    IconMedium: ICONS.IconMedium,
-    IconTrophy: ICONS.IconTrophy,
-    IconCode: ICONS.IconCode,
-    IconCloud: ICONS.IconCloud,
-    IconDatabase: ICONS.IconDatabase,
-    IconApi: ICONS.IconApi,
-    IconBrain: ICONS.IconBrain,
+// A map of icon names to their components for dropdowns and previews
+const ICON_MAP: { [key: string]: React.ComponentType<any> } = {
+    FaGithub, FaLinkedin, FaDev, FaMedium,
+    FiGlobe, FiCode, FiCloud, FiDatabase,
+    HiOutlineMail, HiOutlineDocumentText,
+    SiLeetcode,
+    BsFillDiagram3Fill,
+    RiBrainLine,
+    IconTrophy,
 };
 
 // --- HELPER COMPONENTS ---
@@ -62,75 +61,118 @@ const Textarea: React.FC<React.TextareaHTMLAttributes<HTMLTextAreaElement>> = (p
     />
 );
 
-const Select: React.FC<React.SelectHTMLAttributes<HTMLSelectElement>> = (props) => (
-     <select
-        {...props}
-        className="w-full px-3 py-2 rounded-md bg-slate-100 dark:bg-slate-700 text-slate-900 dark:text-slate-200 border border-slate-300 dark:border-slate-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
-    />
-);
+const Select: React.FC<React.SelectHTMLAttributes<HTMLSelectElement> & { iconPreview?: string }> = ({ iconPreview, ...props }) => {
+    const IconComponent = iconPreview ? ICON_MAP[iconPreview] : null;
+    return (
+        <div className="relative">
+            <select
+                {...props}
+                className="w-full pl-10 pr-4 py-2 appearance-none rounded-md bg-slate-100 dark:bg-slate-700 text-slate-900 dark:text-slate-200 border border-slate-300 dark:border-slate-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            >
+              {props.children}
+            </select>
+            {IconComponent && <IconComponent className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-500" />}
+        </div>
+    );
+};
 
 const Button: React.FC<React.ButtonHTMLAttributes<HTMLButtonElement> & { variant?: 'primary' | 'danger' }> = ({ children, variant = 'primary', ...props }) => {
-    const baseClasses = "px-4 py-2 text-sm font-semibold rounded-md transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 dark:focus:ring-offset-slate-800";
+    const baseClasses = "px-4 py-2 text-sm font-semibold rounded-md transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 dark:focus:ring-offset-slate-800 disabled:opacity-50 disabled:cursor-not-allowed";
     const variantClasses = {
         primary: 'bg-blue-600 text-white hover:bg-blue-500 focus:ring-blue-500',
         danger: 'bg-red-600 text-white hover:bg-red-500 focus:ring-red-500',
     };
-    return <button {...props} className={`${baseClasses} ${variantClasses[variant]}`}>{children}</button>;
+    return <button {...props} className={`${baseClasses} ${variantClasses[variant]} ${props.className || ''}`}>{children}</button>;
 };
 
 // --- CODE GENERATION LOGIC ---
+const generateConstantsFile = (data: any): string => {
+    const reactIcons = new Map<string, string>(); // Map<IconName, Library>
+    const localIcons = new Map<string, string>(); // Map<IconName, Path>
 
-const generateConstantsFile = (data: typeof ALL_CONSTANTS): string => {
-    const iconsToImport = new Set<string>();
+    const getLib = (name: string) => name.substring(0, 2).toLowerCase();
 
-    const safeJSON = (obj: any) => JSON.stringify(obj, null, 2);
-
-    const processItemWithIcon = (item: { icon?: any }) => {
-        if (item.icon && typeof item.icon === 'string' && ICON_MAP[item.icon as keyof typeof ICON_MAP]) {
-            iconsToImport.add(item.icon);
-            return `{ ...${safeJSON({ ...item, icon: undefined })}, icon: React.createElement(${item.icon}) }`.replace(',\n    "icon": undefined\n', '');
-        }
-        return safeJSON(item);
+    const collectIcons = (items: any[]) => {
+        if (!Array.isArray(items)) return;
+        items.forEach(item => {
+            if (item.icon && typeof item.icon === 'string' && ICON_MAP[item.icon]) {
+                const iconName = item.icon;
+                if (iconName.startsWith('Icon')) {
+                    // Heuristic: local icons start with 'Icon' and filename matches component name.
+                    // IMPORTANT: Add the .tsx extension for native ES module resolution.
+                    localIcons.set(iconName, `./components/icons/${iconName}.tsx`);
+                } else {
+                    reactIcons.set(iconName, getLib(iconName));
+                }
+            }
+        });
     };
 
-    const socialLinksString = data.SOCIAL_LINKS.map(processItemWithIcon).join(',\n');
-    const keyHighlightsString = data.KEY_HIGHLIGHTS.map(processItemWithIcon).join(',\n');
-    const skillCategoriesString = data.SKILL_CATEGORIES.map(processItemWithIcon).join(',\n');
+    collectIcons(data.SOCIAL_LINKS);
+    collectIcons(data.KEY_HIGHLIGHTS);
+    collectIcons(data.SKILL_CATEGORIES);
 
-    const importStatements = `import { ${[...iconsToImport].join(', ')} } from './constants.icons';`;
+    const importsByLib = Array.from(reactIcons.entries()).reduce((acc, [name, lib]) => {
+        if (!acc[lib]) acc[lib] = [];
+        if (!acc[lib].includes(name)) acc[lib].push(name);
+        return acc;
+    }, {} as Record<string, string[]>);
+    
+    const reactIconImportStrings = Object.entries(importsByLib)
+        .map(([lib, names]) => `import { ${names.sort().join(', ')} } from 'react-icons/${lib}';`)
+        .join('\n');
+
+    const localIconImportStrings = Array.from(localIcons.entries()).sort((a,b) => a[0].localeCompare(b[0]))
+        .map(([name, path]) => `import { ${name} } from '${path}';`)
+        .join('\n');
+
+    const allImportStrings = [reactIconImportStrings, localIconImportStrings].filter(Boolean).join('\n');
+
+    const stringifyArray = (arr: any[], keysToStringify: string[] = []) => {
+        const itemToString = (item: any) => {
+            const props = Object.entries(item).map(([key, value]) => {
+                if (key === 'icon' && typeof value === 'string') {
+                    return `  icon: React.createElement(${value})`;
+                }
+                const formattedValue = keysToStringify.includes(key) && Array.isArray(value) 
+                    ? `[${value.map(v => `'${v.replace(/'/g, "\\'")}'`).join(', ')}]`
+                    : JSON.stringify(value, null, 2);
+                
+                return `  ${key}: ${formattedValue}`;
+            }).join(',\n  ');
+            return `{\n  ${props}\n}`;
+        };
+        return `[\n  ${arr.map(itemToString).join(',\n  ')}\n]`;
+    };
 
     return `import React from 'react';
 import { Experience, Project, SkillCategory, Link, KeyHighlight, CategorizedSkillGroup } from './types';
-${iconsToImport.size > 0 ? importStatements : ''}
+${allImportStrings}
 
-export const PERSONAL_INFO = ${safeJSON(data.PERSONAL_INFO)};
+
+export const PERSONAL_INFO = ${JSON.stringify(data.PERSONAL_INFO, null, 2)};
 
 export const RESUME_LINK = '${data.RESUME_LINK}';
 
-export const SOCIAL_LINKS: Link[] = [
-${socialLinksString}
-];
+export const SOCIAL_LINKS: Link[] = ${stringifyArray(data.SOCIAL_LINKS)};
 
-export const KEY_HIGHLIGHTS: KeyHighlight[] = [
-${keyHighlightsString}
-];
+export const KEY_HIGHLIGHTS: KeyHighlight[] = ${stringifyArray(data.KEY_HIGHLIGHTS)};
 
-export const EXPERIENCES: Experience[] = ${safeJSON(data.EXPERIENCES)};
+export const EXPERIENCES: Experience[] = ${JSON.stringify(data.EXPERIENCES, null, 2)};
 
-export const PROJECTS: Project[] = ${safeJSON(data.PROJECTS)};
+export const PROJECTS: Project[] = ${JSON.stringify(data.PROJECTS, null, 2)};
 
-export const SKILLS: SkillCategory[] = ${safeJSON(data.SKILLS)};
+export const SKILLS: SkillCategory[] = ${JSON.stringify(data.SKILLS, null, 2)};
 
-export const CURRENT_INTERESTS: string[] = ${safeJSON(data.CURRENT_INTERESTS)};
+export const CURRENT_INTERESTS: string[] = ${JSON.stringify(data.CURRENT_INTERESTS, null, 2)};
 
-export const SKILL_CATEGORIES: CategorizedSkillGroup[] = [
-${skillCategoriesString}
-];
+export const SKILL_CATEGORIES: CategorizedSkillGroup[] = ${stringifyArray(data.SKILL_CATEGORIES, ['skills'])};
 
-export const EDUCATION = ${safeJSON(data.EDUCATION)};
+export const EXAMPLE_PROMPTS: string[] = ${JSON.stringify(data.EXAMPLE_PROMPTS, null, 2)};
 
-// NOTE: This context document is auto-generated.
-// Manual edits might be overwritten if you regenerate from the dashboard.
+export const EDUCATION = ${JSON.stringify(data.EDUCATION, null, 2)};
+
+
 export const AI_CONTEXT_DOCUMENT = \`
 This is a document about Abhishek “Abhi” Tiwari, a Backend-leaning Full-Stack Software Engineer. Use this information to answer questions about him.
 
@@ -190,45 +232,9 @@ He actively writes technical articles on Medium and DEV.to. You can find his lat
 `;
 };
 
-const generateIconsFile = (): string => {
-    return `import { IconMail } from './components/icons/IconMail';
-import { IconGitHub } from './components/icons/IconGitHub';
-import { IconLinkedIn } from './components/icons/IconLinkedIn';
-import { IconGlobe } from './components/icons/IconGlobe';
-import { IconNote } from './components/icons/IconNote';
-import { IconLeetCode } from './components/icons/IconLeetCode';
-import { IconDevTo } from './components/icons/IconDevTo';
-import { IconMedium } from './components/icons/IconMedium';
-import { IconTrophy } from './components/icons/IconTrophy';
-import { IconCode } from './components/icons/IconCode';
-import { IconCloud } from './components/icons/IconCloud';
-import { IconDatabase } from './components/icons/IconDatabase';
-import { IconApi } from './components/icons/IconApi';
-import { IconBrain } from './components/icons/IconBrain';
-
-export {
-    IconMail,
-    IconGitHub,
-    IconLinkedIn,
-    IconGlobe,
-    IconNote,
-    IconLeetCode,
-    IconDevTo,
-    IconMedium,
-    IconTrophy,
-    IconCode,
-    IconCloud,
-    IconDatabase,
-    IconApi,
-    IconBrain,
-};
-`;
-};
-
-
 // --- MAIN DASHBOARD COMPONENT ---
 
-const Dashboard: React.FC = () => {
+const DashboardPage: React.FC = () => {
     const { theme } = useTheme();
     const [isAuthenticated, setIsAuthenticated] = useState(false);
     const [password, setPassword] = useState('');
@@ -236,18 +242,11 @@ const Dashboard: React.FC = () => {
     
     // Normalize data by replacing React elements with string keys
     const initialFormData = useMemo(() => {
-        const iconNameMap = Object.entries(ICON_MAP).reduce((acc, [name, comp]) => {
-            // This mapping is imperfect but works for this specific set of components
-            const compString = comp.toString();
-            acc[compString] = name;
-            return acc;
-        }, {} as Record<string, string>);
-    
         const normalizeIcon = (iconElement: React.ReactNode) => {
             if (React.isValidElement(iconElement)) {
                 const el = iconElement as React.ReactElement;
-                const func = el.type;
-                const iconName = Object.keys(ICONS).find(key => ICONS[key as keyof typeof ICONS] === func);
+                // Find the key in ICON_MAP whose value is the component constructor
+                const iconName = Object.keys(ICON_MAP).find(key => ICON_MAP[key] === el.type);
                 return iconName || 'UnknownIcon';
             }
             return 'UnknownIcon';
@@ -262,8 +261,7 @@ const Dashboard: React.FC = () => {
     }, []);
 
     const [formData, setFormData] = useState(initialFormData);
-    const [generatedConstants, setGeneratedConstants] = useState('');
-    const [generatedIcons, setGeneratedIcons] = useState('');
+    const [generatedCode, setGeneratedCode] = useState('');
 
     const handleLogin = (e: React.FormEvent) => {
         e.preventDefault();
@@ -285,15 +283,6 @@ const Dashboard: React.FC = () => {
         updatedList[index] = { ...updatedList[index], [field]: value };
         handleFormChange(section, updatedList);
     };
-
-    const handleListStringChange = (section: keyof typeof formData, index: number, subField: string, itemIndex: number, value: string) => {
-        const list = Array.isArray(formData[section]) ? formData[section] as any[] : [];
-        const updatedList = [...list];
-        const updatedSubList = [...updatedList[index][subField]];
-        updatedSubList[itemIndex] = value;
-        updatedList[index] = { ...updatedList[index], [subField]: updatedSubList };
-        handleFormChange(section, updatedList);
-    }
     
     const handleAddItem = (section: keyof typeof formData, newItem: any) => {
         const list = Array.isArray(formData[section]) ? formData[section] as any[] : [];
@@ -306,13 +295,12 @@ const Dashboard: React.FC = () => {
     };
 
     const handleGenerate = () => {
-        setGeneratedConstants(generateConstantsFile(formData));
-        setGeneratedIcons(generateIconsFile());
+        setGeneratedCode(generateConstantsFile(formData));
     };
 
     if (!isAuthenticated) {
         return (
-            <div className="flex items-center justify-center min-h-screen">
+            <div className="flex items-center justify-center min-h-screen bg-slate-50 dark:bg-slate-900">
                 <form onSubmit={handleLogin} className="p-8 bg-white dark:bg-slate-800 rounded-lg shadow-2xl w-full max-w-sm space-y-4 border border-slate-200 dark:border-slate-700">
                     <h1 className="text-2xl font-bold text-center text-slate-900 dark:text-slate-100">Dashboard Login</h1>
                     <div>
@@ -325,40 +313,44 @@ const Dashboard: React.FC = () => {
             </div>
         );
     }
+    
+    const copyToClipboard = async (text: string) => {
+        try {
+            await navigator.clipboard.writeText(text);
+            alert(`constants.ts code copied to clipboard!`);
+        } catch (err) {
+            alert(`Failed to copy code.`);
+        }
+    };
 
-    const renderArrayEditor = (section: keyof typeof formData, fields: {key: string, label: string, type?: 'text' | 'textarea' | 'icon' | 'string-array'}[], newItem: object) => (
+    const renderArrayEditor = (
+        section: keyof typeof formData, 
+        fields: {key: string, label: string, type?: 'text' | 'textarea' | 'textarea-array' | 'icon' | 'select', options?: string[]}[], 
+        newItem: object
+    ) => (
         <div className="space-y-4">
             {(formData[section] as any[]).map((item, index) => (
                 <div key={index} className="p-4 bg-slate-100/50 dark:bg-slate-900/30 rounded-lg border border-slate-200 dark:border-slate-700/50 space-y-3 relative">
-                    <Button onClick={() => handleRemoveItem(section, index)} variant="danger" className="absolute top-2 right-2 !px-2 !py-1 text-xs">Remove</Button>
+                    <Button onClick={() => handleRemoveItem(section, index)} variant="danger" className="!p-2 absolute top-2 right-2 text-xs">
+                        <FiTrash2 className="h-4 w-4"/>
+                    </Button>
                     {fields.map(field => (
                         <div key={field.key}>
                             <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">{field.label}</label>
                             {field.type === 'textarea' ? (
-                                <Textarea 
-                                    value={Array.isArray(item[field.key]) ? (item[field.key] as string[]).join('\n') : item[field.key]} 
-                                    onChange={(e) => handleNestedChange(section, index, field.key, field.key === 'description' ? e.target.value.split('\n') : e.target.value)}
-                                    rows={4}
-                                />
+                                <Textarea rows={3} value={item[field.key]} onChange={(e) => handleNestedChange(section, index, field.key, e.target.value)} />
+                            ) : field.type === 'textarea-array' ? (
+                                <Textarea rows={4} value={Array.isArray(item[field.key]) ? item[field.key].join('\n') : item[field.key]} onChange={(e) => handleNestedChange(section, index, field.key, e.target.value.split('\n'))} placeholder="One item per line" />
                             ) : field.type === 'icon' ? (
-                                <Select value={item[field.key]} onChange={(e) => handleNestedChange(section, index, field.key, e.target.value)}>
-                                    {Object.keys(ICON_MAP).map(iconName => <option key={iconName} value={iconName}>{iconName}</option>)}
+                                <Select value={item[field.key]} iconPreview={item[field.key]} onChange={(e) => handleNestedChange(section, index, field.key, e.target.value)}>
+                                    {Object.keys(ICON_MAP).sort().map(iconName => <option key={iconName} value={iconName}>{iconName}</option>)}
                                 </Select>
-                            ) : field.type === 'string-array' ? (
-                                <div className="space-y-2">
-                                    {(item[field.key] as string[]).map((val, i) => (
-                                        <div key={i} className="flex items-center gap-2">
-                                            <Input value={val} onChange={(e) => handleListStringChange(section, index, field.key, i, e.target.value)} />
-                                            <Button onClick={() => handleListStringChange(section, index, field.key, -1, '')} variant="danger" className="!px-2 !py-1 text-xs">x</Button>
-                                        </div>
-                                    ))}
-                                    <Button onClick={() => handleListStringChange(section, index, field.key, item[field.key].length, '')}>Add Item</Button>
-                                </div>
-
+                            ) : field.type === 'select' ? (
+                                <Select value={item[field.key]} onChange={(e) => handleNestedChange(section, index, field.key, e.target.value)}>
+                                  {field.options?.map(opt => <option key={opt} value={opt}>{opt}</option>)}
+                                </Select>
                             ) : (
-                                <Input 
-                                    value={Array.isArray(item[field.key]) ? (item[field.key] as string[]).join(', ') : item[field.key]}
-                                    onChange={(e) => handleNestedChange(section, index, field.key, field.key === 'tech' || field.key === 'tags' || field.key === 'skills' || field.key === 'coursework' ? e.target.value.split(',').map(s => s.trim()) : e.target.value)} />
+                                <Input value={Array.isArray(item[field.key]) ? item[field.key].join(', ') : item[field.key]} onChange={(e) => handleNestedChange(section, index, field.key, (field.key === 'tech' || field.key === 'tags' || field.key === 'skills' || field.key === 'coursework') ? e.target.value.split(',').map(s => s.trim()) : e.target.value)} />
                             )}
                         </div>
                     ))}
@@ -367,23 +359,14 @@ const Dashboard: React.FC = () => {
             <Button onClick={() => handleAddItem(section, newItem)}>Add New</Button>
         </div>
     );
-    
-    const copyToClipboard = async (text: string, type: string) => {
-        try {
-            await navigator.clipboard.writeText(text);
-            alert(`${type} copied to clipboard!`);
-        } catch (err) {
-            alert(`Failed to copy ${type}.`);
-        }
-    };
 
     return (
-        <div className="min-h-screen text-slate-700 dark:text-slate-300">
+        <div className="min-h-screen text-slate-700 dark:text-slate-300 bg-slate-50 dark:bg-slate-900">
             <header className="sticky top-0 z-20 bg-white/80 dark:bg-slate-900/80 backdrop-blur-lg border-b border-slate-200 dark:border-slate-700">
                 <div className="max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center h-16">
                     <h1 className="text-xl font-bold">Portfolio Content Dashboard</h1>
                     <div className="flex items-center gap-4">
-                        <Button onClick={handleGenerate}>Generate `constants.ts`</Button>
+                        <Button onClick={handleGenerate} disabled={!!generatedCode}>Generate `constants.ts`</Button>
                         <ThemeToggle />
                     </div>
                 </div>
@@ -396,62 +379,73 @@ const Dashboard: React.FC = () => {
                                 <div key={key}>
                                     <label className="capitalize block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">{key.replace(/([A-Z])/g, ' $1')}</label>
                                     {key === 'summary' ? (
-                                        <Textarea rows={4} value={value} onChange={e => handleFormChange('PERSONAL_INFO', {...formData.PERSONAL_INFO, [key]: e.target.value})} />
+                                        <Textarea rows={4} value={value as string} onChange={e => handleFormChange('PERSONAL_INFO', {...formData.PERSONAL_INFO, [key]: e.target.value})} />
                                     ) : (
-                                        <Input value={value} onChange={e => handleFormChange('PERSONAL_INFO', {...formData.PERSONAL_INFO, [key]: e.target.value})} />
+                                        <Input value={value as string} onChange={e => handleFormChange('PERSONAL_INFO', {...formData.PERSONAL_INFO, [key]: e.target.value})} />
                                     )}
                                 </div>
                             ))}
                         </div>
                    </Section>
                    <Section title="Social Links">
-                       {renderArrayEditor('SOCIAL_LINKS', [{key: 'name', label: 'Name'}, {key: 'url', label: 'URL'}, {key: 'icon', label: 'Icon', type: 'icon'}], { name: '', url: '', icon: 'IconGlobe'})}
+                       {renderArrayEditor('SOCIAL_LINKS', [{key: 'name', label: 'Name'}, {key: 'url', label: 'URL'}, {key: 'icon', label: 'Icon', type: 'icon'}], { name: '', url: '', icon: 'FiGlobe'})}
                    </Section>
                    <Section title="Key Highlights">
                         {renderArrayEditor('KEY_HIGHLIGHTS', [{key: 'metric', label: 'Metric'}, {key: 'description', label: 'Description'}, {key: 'icon', label: 'Icon', type: 'icon'}], {metric: '', description: '', icon: 'IconTrophy'})}
                    </Section>
                    <Section title="Experience">
-                        {renderArrayEditor('EXPERIENCES', [{key: 'role', label: 'Role'}, {key: 'company', label: 'Company'}, {key: 'period', label: 'Period'}, {key: 'location', label: 'Location'}, {key: 'summary', label: 'Summary', type: 'textarea'}, {key: 'description', label: 'Description (one item per line)', type: 'textarea'}], {role: '', company: '', period: '', location: '', description: [], summary: ''})}
+                        {renderArrayEditor('EXPERIENCES', [{key: 'role', label: 'Role'}, {key: 'company', label: 'Company'}, {key: 'period', label: 'Period'}, {key: 'location', label: 'Location'}, {key: 'summary', label: 'Summary', type: 'textarea'}, {key: 'description', label: 'Description (one per line)', type: 'textarea-array'}], {role: '', company: '', period: '', location: '', description: [], summary: ''})}
                    </Section>
                    <Section title="Projects">
-                       {renderArrayEditor('PROJECTS', [{key: 'title', label: 'Title'}, {key: 'category', label: 'Category'}, {key: 'tech', label: 'Technologies (comma-separated)'}, {key: 'tags', label: 'Tags (comma-separated)'}, {key: 'description', label: 'Description', type: 'textarea'}, {key: 'link', label: 'GitHub Link'}, {key: 'liveDemoUrl', label: 'Live Demo URL'}, {key: 'imageUrl', label: 'Image URL'}], {title: '', category: 'Full-Stack', tech: [], tags: [], description: '', link: '', imageUrl: ''})}
+                       {renderArrayEditor('PROJECTS', [{key: 'title', label: 'Title'}, {key: 'category', label: 'Category', type: 'select', options:['Backend', 'Frontend', 'AI', 'Full-Stack']}, {key: 'tech', label: 'Technologies (comma-separated)'}, {key: 'tags', label: 'Tags (comma-separated)'}, {key: 'description', label: 'Description', type: 'textarea'}, {key: 'link', label: 'GitHub Link'}, {key: 'liveDemoUrl', label: 'Live Demo URL'}, {key: 'imageUrl', label: 'Image URL'}], {title: '', category: 'Full-Stack', tech: [], tags: [], description: '', link: '', imageUrl: ''})}
                    </Section>
                    <Section title="Skills">
                        {renderArrayEditor('SKILLS', [{key: 'name', label: 'Category Name'}, {key: 'skills', label: 'Skills (comma-separated)'}], {name: '', skills: []})}
+                   </Section>
+                    <Section title="AI Example Prompts">
+                        <div className="space-y-3">
+                            <div>
+                                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Prompts (one per line)</label>
+                                <Textarea 
+                                    rows={4} 
+                                    value={Array.isArray(formData.EXAMPLE_PROMPTS) ? formData.EXAMPLE_PROMPTS.join('\n') : ''} 
+                                    onChange={e => handleFormChange('EXAMPLE_PROMPTS', e.target.value.split('\n').filter(p => p.trim() !== ''))} 
+                                    placeholder="One prompt per line"
+                                />
+                            </div>
+                        </div>
                    </Section>
                    <Section title="Education">
                         <div className="space-y-3">
                            {Object.entries(formData.EDUCATION).map(([key, value]) => (
                                <div key={key}>
-                                   <label className="capitalize block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">{key}</label>
-                                   <Input value={Array.isArray(value) ? value.join(', ') : value} onChange={e => handleFormChange('EDUCATION', {...formData.EDUCATION, [key]: key === 'coursework' ? e.target.value.split(',').map(s => s.trim()) : e.target.value})} />
+                                   <label className="capitalize block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">{key.replace(/([A-Z])/g, ' $1')}</label>
+                                   <Input value={Array.isArray(value) ? value.join(', ') : value as string} onChange={e => handleFormChange('EDUCATION', {...formData.EDUCATION, [key]: key === 'coursework' ? e.target.value.split(',').map(s => s.trim()) : e.target.value})} />
                                </div>
                            ))}
                         </div>
                    </Section>
                 </div>
                 <div className="sticky top-20">
-                    {generatedConstants && (
+                    {generatedCode ? (
                         <div className="space-y-4">
                             <div>
                                 <div className="flex justify-between items-center mb-2">
                                     <h3 className="font-bold text-lg">Generated `constants.ts`</h3>
-                                    <Button onClick={() => copyToClipboard(generatedConstants, 'constants.ts code')}>Copy</Button>
+                                    <div className="flex gap-2">
+                                        <Button onClick={() => copyToClipboard(generatedCode)}>Copy</Button>
+                                        <Button onClick={() => setGeneratedCode('')} variant="danger">Clear</Button>
+                                    </div>
                                 </div>
-                                <pre className="w-full h-[60vh] overflow-auto p-4 rounded-lg bg-slate-900 text-slate-100 border border-slate-700 text-sm">
-                                    <code>{generatedConstants}</code>
+                                <pre className="w-full h-[80vh] overflow-auto p-4 rounded-lg bg-slate-900 text-slate-100 border border-slate-700 text-sm">
+                                    <code>{generatedCode}</code>
                                 </pre>
                              </div>
-                             <div>
-                                <div className="flex justify-between items-center mb-2">
-                                    <h3 className="font-bold text-lg">Generated `constants.icons.ts`</h3>
-                                    <Button onClick={() => copyToClipboard(generatedIcons, 'constants.icons.ts code')}>Copy</Button>
-                                </div>
-                                <pre className="w-full h-auto overflow-auto p-4 rounded-lg bg-slate-900 text-slate-100 border border-slate-700 text-sm">
-                                    <code>{generatedIcons}</code>
-                                </pre>
-                                <p className="text-xs mt-2 text-slate-500">Create a new file named `constants.icons.ts` in your `src` folder and paste this content.</p>
-                             </div>
+                        </div>
+                    ) : (
+                        <div className="text-center p-8 border-2 border-dashed border-slate-300 dark:border-slate-700 rounded-lg">
+                           <h3 className="text-lg font-semibold">Generate Code</h3>
+                           <p className="mt-2 text-slate-500">Edit the content on the left and click the "Generate" button to see the new `constants.ts` file here.</p>
                         </div>
                     )}
                 </div>
@@ -460,23 +454,4 @@ const Dashboard: React.FC = () => {
     );
 };
 
-// Wrapper with ThemeProvider
-const DashboardApp: React.FC = () => {
-    return (
-        <ThemeProvider>
-            <Dashboard />
-        </ThemeProvider>
-    );
-};
-
-const rootElement = document.getElementById('root');
-if (!rootElement) {
-    throw new Error("Could not find root element to mount to");
-}
-
-const root = ReactDOM.createRoot(rootElement);
-root.render(
-    <React.StrictMode>
-        <DashboardApp />
-    </React.StrictMode>
-);
+export default DashboardPage;

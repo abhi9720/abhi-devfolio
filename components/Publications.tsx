@@ -1,11 +1,9 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import type { Article } from '../types';
-import { IconExternalLink } from './icons/IconExternalLink';
-import { IconMedium } from './icons/IconMedium';
-import { IconDevTo } from './icons/IconDevTo';
-import { IconSearch } from './icons/IconSearch';
 import PublicationSkeleton from './PublicationSkeleton';
 import { PERSONAL_INFO } from '../constants';
+import { FaMedium, FaDev } from 'react-icons/fa';
+import { FiExternalLink, FiSearch } from 'react-icons/fi';
 
 const SectionHeader: React.FC<{ title: string }> = ({ title }) => (
     <div className="sticky top-0 z-10 py-4 mb-4 bg-slate-50/75 dark:bg-slate-900/75 backdrop-blur lg:static lg:mb-0 lg:py-0 lg:bg-transparent">
@@ -37,7 +35,7 @@ const ArticleCard: React.FC<{ article: Article }> = ({ article }) => {
             <div className="flex-grow">
                 <div className="flex justify-between items-center mb-2">
                     <div className="flex items-center gap-2 text-sm text-slate-500 dark:text-slate-400">
-                        {article.platform === 'Medium' ? <IconMedium className="h-5 w-5" /> : <IconDevTo className="h-5 w-5" />}
+                        {article.platform === 'Medium' ? <FaMedium className="h-5 w-5" /> : <FaDev className="h-5 w-5" />}
                         <span>{article.platform}</span>
                     </div>
                     {isNew && <span className="text-xs font-bold text-fuchsia-500 bg-fuchsia-500/10 px-2 py-0.5 rounded-full">New</span>}
@@ -54,7 +52,7 @@ const ArticleCard: React.FC<{ article: Article }> = ({ article }) => {
                     {new Date(article.pubDate).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })}
                 </p>
                 <div className="flex items-center gap-1 text-sm font-semibold text-blue-600 dark:text-blue-400">
-                    Read More <IconExternalLink className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+                    Read More <FiExternalLink className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
                 </div>
             </div>
         </a>
@@ -181,7 +179,7 @@ const Publications: React.FC = () => {
                                     aria-label="Search articles"
                                 />
                                 <div className="absolute left-3.5 top-1/2 transform -translate-y-1/2 text-slate-400 dark:text-slate-500">
-                                    <IconSearch className="h-5 w-5" />
+                                    <FiSearch className="h-5 w-5" />
                                 </div>
                             </div>
                             <div className="flex-shrink-0 bg-slate-200/80 dark:bg-slate-800 p-1 rounded-lg flex items-center">

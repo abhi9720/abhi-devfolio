@@ -1,5 +1,6 @@
 import React from 'react';
 import { KEY_HIGHLIGHTS } from '../constants';
+import AnimatedNumber from './AnimatedNumber';
 
 const KeyHighlights: React.FC = () => {
     if (!KEY_HIGHLIGHTS || KEY_HIGHLIGHTS.length === 0) return null;
@@ -16,11 +17,13 @@ const KeyHighlights: React.FC = () => {
                         <div className="flex-shrink-0 mt-1 text-blue-500 dark:text-blue-400">
                            {React.isValidElement(highlight.icon)
                                 ? React.cloneElement(highlight.icon as React.ReactElement<{ className?: string }>, { className: 'h-5 w-5' })
-                                : highlight.icon
+                                : null
                             }
                         </div>
                         <div>
-                            <p className="font-semibold text-slate-800 dark:text-slate-200">{highlight.metric}</p>
+                            <p className="font-semibold text-slate-800 dark:text-slate-200 tabular-nums">
+                                <AnimatedNumber metric={highlight.metric} />
+                            </p>
                             <p className="text-slate-600 dark:text-slate-400 text-sm">{highlight.description}</p>
                         </div>
                     </li>

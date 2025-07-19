@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import GitHubCalendar from 'react-github-calendar';
 import { PERSONAL_INFO } from '../constants';
 import { useTheme } from '../contexts/ThemeContext';
@@ -8,6 +8,22 @@ const SectionHeader: React.FC<{ title: string }> = ({ title }) => (
         <h2 className="text-sm font-bold uppercase tracking-widest bg-gradient-to-r from-slate-900 to-blue-600 dark:from-slate-200 dark:to-blue-500 text-transparent bg-clip-text lg:sr-only">{title}</h2>
     </div>
 );
+
+const StatCard: React.FC<{ src: string; alt: string }> = ({ src, alt }) => {
+    const [isLoading, setIsLoading] = useState(true);
+    return (
+        <div className={`relative rounded-lg bg-white dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700/50 p-4 min-h-[195px] overflow-hidden`}>
+            {isLoading && <div className="absolute inset-0 bg-slate-200 dark:bg-slate-700/50 animate-pulse"></div>}
+            <img 
+                src={src}
+                alt={alt}
+                onLoad={() => setIsLoading(false)}
+                className={`relative w-full transition-opacity duration-300 ${isLoading ? 'opacity-0' : 'opacity-100'}`}
+                loading="lazy"
+            />
+        </div>
+    );
+}
 
 const GitHubActivity: React.FC = () => {
     const { theme } = useTheme();
@@ -42,15 +58,13 @@ const GitHubActivity: React.FC = () => {
                         />
                     </div>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
-                        <img 
+                        <StatCard 
                             alt="Abhi's GitHub Stats"
-                            src={`https://github-readme-stats.vercel.app/api?username=${PERSONAL_INFO.nickname}&show_icons=true&theme=${gitHubStatsTheme}`}
-                            className="w-full h-auto rounded-lg bg-white dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700/50 p-4"
+                            src={`https://github-readme-stats.vercel.app/api?username=${PERSONAL_INFO.nickname}&show_icons=true&theme=${gitHubStatsTheme}&bg_color=00000000`}
                         />
-                        <img 
+                        <StatCard 
                             alt="Abhi's Top Languages"
                             src={`https://github-readme-stats.vercel.app/api/top-langs/?username=${PERSONAL_INFO.nickname}&layout=compact&theme=${gitHubStatsTheme}&hide_border=true&bg_color=00000000`}
-                            className="w-full h-auto rounded-lg bg-white dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700/50 p-4"
                         />
                     </div>
                 </div>

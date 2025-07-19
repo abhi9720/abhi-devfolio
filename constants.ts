@@ -1,6 +1,12 @@
 import React from 'react';
 import { Experience, Project, SkillCategory, Link, KeyHighlight, CategorizedSkillGroup } from './types';
-import { IconMail, IconGitHub, IconLinkedIn, IconGlobe, IconNote, IconLeetCode, IconDevTo, IconMedium, IconTrophy, IconCode, IconCloud, IconDatabase, IconApi, IconBrain } from './constants.icons';
+import { FaGithub, FaLinkedin, FaDev, FaMedium } from 'react-icons/fa';
+import { FiGlobe, FiCode, FiCloud, FiDatabase } from 'react-icons/fi';
+import { HiOutlineMail, HiOutlineDocumentText } from 'react-icons/hi';
+import { SiLeetcode } from 'react-icons/si';
+import { BsFillDiagram3Fill } from 'react-icons/bs';
+import { RiBrainLine } from 'react-icons/ri';
+import { IconTrophy } from './components/icons/IconTrophy';
 
 
 export const PERSONAL_INFO = {
@@ -17,14 +23,14 @@ export const PERSONAL_INFO = {
 export const RESUME_LINK = 'https://drive.google.com/file/d/1UWDYhLGwUqb5UhvK9uq5nN1GkCFxF3FQ/preview';
 
 export const SOCIAL_LINKS: Link[] = [
-  { name: 'GitHub', url: 'https://github.com/abhi9720', icon: React.createElement(IconGitHub) },
-  { name: 'LinkedIn', url: 'https://linkedin.com/in/abhi9720', icon: React.createElement(IconLinkedIn) },
-  { name: 'Email', url: `mailto:${PERSONAL_INFO.email}`, icon: React.createElement(IconMail) },
-  { name: 'Portfolio', url: 'https://abhi9720.netlify.app', icon: React.createElement(IconGlobe) },
-  { name: 'Notes & Blog', url: 'https://abhisheks-notes.super.site', icon: React.createElement(IconNote) },
-  { name: 'LeetCode', url: 'https://leetcode.com/abhi9720', icon: React.createElement(IconLeetCode) },
-  { name: 'DEV.to', url: 'https://dev.to/abhi9720', icon: React.createElement(IconDevTo) },
-  { name: 'Medium', url: 'https://medium.com/@Abhishektiwari', icon: React.createElement(IconMedium) },
+  { name: 'GitHub', url: 'https://github.com/abhi9720', icon: React.createElement(FaGithub) },
+  { name: 'LinkedIn', url: 'https://linkedin.com/in/abhi9720', icon: React.createElement(FaLinkedin) },
+  { name: 'Email', url: `mailto:${PERSONAL_INFO.email}`, icon: React.createElement(HiOutlineMail) },
+  { name: 'Portfolio', url: 'https://abhi9720.netlify.app', icon: React.createElement(FiGlobe) },
+  { name: 'Notes & Blog', url: 'https://abhisheks-notes.super.site', icon: React.createElement(HiOutlineDocumentText) },
+  { name: 'LeetCode', url: 'https://leetcode.com/abhi9720', icon: React.createElement(SiLeetcode) },
+  { name: 'DEV.to', url: 'https://dev.to/abhi9720', icon: React.createElement(FaDev) },
+  { name: 'Medium', url: 'https://medium.com/@Abhishektiwari', icon: React.createElement(FaMedium) },
 ];
 
 export const KEY_HIGHLIGHTS: KeyHighlight[] = [
@@ -167,31 +173,36 @@ export const CURRENT_INTERESTS: string[] = [
 export const SKILL_CATEGORIES: CategorizedSkillGroup[] = [
     {
         name: 'Technologies & Tooling',
-        icon: React.createElement(IconCode, { className: 'h-6 w-6' }),
+        icon: React.createElement(FiCode),
         skills: ['Java', 'Golang', 'TypeScript', 'JavaScript (ES6)', 'Python', 'React.js', 'Angular 10', 'Spring Boot', 'Node.js', 'Express.js', 'Hibernate', 'GORM', 'Gin', 'Tailwind CSS', 'HTML/CSS', 'Git', 'Maven', 'Postman', 'Bash', 'System Design', 'Algorithm Optimization'],
     },
     {
         name: 'Cloud & DevOps',
-        icon: React.createElement(IconCloud, { className: 'h-6 w-6' }),
+        icon: React.createElement(FiCloud),
         skills: ['AWS (EC2, RDS, S3, VPC)', 'Docker', 'Kubernetes', 'CI/CD', 'Prometheus'],
     },
     {
         name: 'Databases',
-        icon: React.createElement(IconDatabase, { className: 'h-6 w-6' }),
+        icon: React.createElement(FiDatabase),
         skills: ['MySQL', 'PostgreSQL', 'Redis', 'MongoDB', 'Oracle SQL', 'IndexedDB'],
     },
     {
         name: 'APIs & Integration',
-        icon: React.createElement(IconApi, { className: 'h-6 w-6' }),
+        icon: React.createElement(BsFillDiagram3Fill),
         skills: ['Apache Kafka', 'Socket.io', 'JWT', 'WebSockets', 'Swagger', 'OpenAI API', 'LangChain', 'LLM Integration', 'Vector DBs (RAG)'],
     },
     {
         name: 'Current Interests & Learning',
-        icon: React.createElement(IconBrain, { className: 'h-6 w-6' }),
+        icon: React.createElement(RiBrainLine),
         skills: [...CURRENT_INTERESTS],
     },
 ];
 
+export const EXAMPLE_PROMPTS: string[] = [
+    "Summarize resume.",
+    "What are your strongest backend skills?",
+    "Tell me about the 'Banking Portal' project.",
+];
 
 export const EDUCATION = {
   degree: 'B.Tech in Computer Science & Engineering',

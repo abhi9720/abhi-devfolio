@@ -1,9 +1,8 @@
 import React, { useState, useMemo } from 'react';
 import { PROJECTS } from '../constants';
 import type { Project } from '../types';
-import { IconGitHub } from './icons/IconGitHub';
-import { IconGlobe } from './icons/IconGlobe';
-import { IconSearch } from './icons/IconSearch';
+import { FaGithub } from 'react-icons/fa';
+import { FiGlobe, FiSearch } from 'react-icons/fi';
 
 const SectionHeader: React.FC<{ title: string }> = ({ title }) => (
     <div className="sticky top-0 z-10 py-4 mb-4 bg-slate-50/75 dark:bg-slate-900/75 backdrop-blur lg:static lg:mb-0 lg:py-0 lg:bg-transparent">
@@ -13,7 +12,7 @@ const SectionHeader: React.FC<{ title: string }> = ({ title }) => (
 
 const ProjectCard: React.FC<{ project: Project }> = ({ project }) => {
     return (
-        <div className="bg-white dark:bg-slate-800/50 rounded-2xl shadow-md hover:shadow-xl dark:hover:shadow-blue-900/30 transition-all duration-300 transform hover:-translate-y-1.5 flex flex-col overflow-hidden border border-slate-200/80 dark:border-slate-700/50">
+        <div className="bg-white dark:bg-slate-800/50 rounded-2xl shadow-md hover:shadow-xl dark:hover:shadow-[0_0_15px_rgba(59,130,246,0.25)] transition-all duration-300 transform hover:-translate-y-1.5 flex flex-col overflow-hidden border border-slate-200/80 dark:border-slate-700/50">
             <img src={project.imageUrl} alt={`${project.title} thumbnail`} className="w-full h-48 object-cover" loading="lazy" />
             <div className="p-5 flex-grow flex flex-col">
                 <div className="flex flex-wrap gap-2 mb-3">
@@ -44,19 +43,27 @@ const ProjectCard: React.FC<{ project: Project }> = ({ project }) => {
                   rel="noopener noreferrer"
                   className="inline-flex items-center gap-2 px-3 py-1.5 text-sm font-semibold border border-slate-300 dark:border-slate-600 text-slate-600 dark:text-slate-300 rounded-md hover:border-blue-500 dark:hover:border-blue-500 hover:text-blue-500 dark:hover:text-blue-400 transition-colors"
                 >
-                  <IconGitHub className="h-4 w-4" />
+                  <FaGithub className="h-4 w-4" />
                   View Code
                 </a>
-                {project.liveDemoUrl && (
+                {project.liveDemoUrl && project.liveDemoUrl !== '#' ? (
                      <a
                         href={project.liveDemoUrl}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="inline-flex items-center gap-2 px-3 py-1.5 text-sm font-semibold border border-transparent text-blue-600 dark:text-blue-400 rounded-md hover:underline"
                     >
-                        <IconGlobe className="h-4 w-4" />
+                        <FiGlobe className="h-4 w-4" />
                         Live Demo
                     </a>
+                ) : (
+                    <span
+                        className="inline-flex items-center gap-2 px-3 py-1.5 text-sm font-semibold border border-transparent text-slate-400 dark:text-slate-500 rounded-md cursor-not-allowed"
+                        title="Live demo not available"
+                    >
+                        <FiGlobe className="h-4 w-4" />
+                        Live Demo
+                    </span>
                 )}
             </div>
         </div>
@@ -104,7 +111,7 @@ const Projects: React.FC = () => {
                                 aria-label="Search for a project"
                             />
                             <div className="absolute left-3.5 top-1/2 transform -translate-y-1/2 text-slate-400 dark:text-slate-500">
-                                <IconSearch className="h-5 w-5" />
+                                <FiSearch className="h-5 w-5" />
                             </div>
                         </div>
 

@@ -1,7 +1,6 @@
 import React, { useEffect } from 'react';
-import { IconDownload } from './icons/IconDownload';
-import { IconX } from './icons/IconX';
 import { RESUME_LINK } from '../constants';
+import { FiDownload, FiX } from 'react-icons/fi';
 
 interface ResumeModalProps {
   isOpen: boolean;
@@ -47,7 +46,7 @@ const ResumeModal: React.FC<ResumeModalProps> = ({ isOpen, onClose }) => {
               rel="noopener noreferrer"
               className="inline-flex items-center gap-2 px-4 py-2 text-sm font-semibold text-white bg-blue-600 rounded-md hover:bg-blue-500 transition-colors duration-300"
             >
-              <IconDownload className="h-4 w-4" />
+              <FiDownload className="h-4 w-4" />
               Download
             </a>
             <button
@@ -55,7 +54,7 @@ const ResumeModal: React.FC<ResumeModalProps> = ({ isOpen, onClose }) => {
               className="p-2 rounded-full text-slate-500 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700 hover:text-slate-800 dark:hover:text-slate-100 transition-colors"
               aria-label="Close"
             >
-              <IconX className="h-6 w-6" />
+              <FiX className="h-6 w-6" />
             </button>
           </div>
         </div>

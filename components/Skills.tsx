@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { SKILL_CATEGORIES } from '../constants';
-import { IconSearch } from './icons/IconSearch';
+import { FiSearch } from 'react-icons/fi';
 
 const SectionHeader: React.FC<{ title: string }> = ({ title }) => (
     <div className="sticky top-0 z-10 py-4 mb-4 bg-slate-50/75 dark:bg-slate-900/75 backdrop-blur lg:static lg:mb-0 lg:py-0 lg:bg-transparent">
@@ -25,7 +25,7 @@ const Skills: React.FC = () => {
             return { ...category, skills: filteredSkills };
         }).filter(category => category.skills.length > 0);
 
-    }, [searchTerm, SKILL_CATEGORIES]);
+    }, [searchTerm]);
 
     return (
         <section id="skills" className="scroll-mt-20">
@@ -46,7 +46,7 @@ const Skills: React.FC = () => {
                             aria-label="Search for a skill"
                         />
                         <div className="absolute left-3.5 top-1/2 transform -translate-y-1/2 text-slate-400 dark:text-slate-500">
-                            <IconSearch className="h-5 w-5" />
+                            <FiSearch className="h-5 w-5" />
                         </div>
                     </div>
 
@@ -55,7 +55,9 @@ const Skills: React.FC = () => {
                             <div key={category.name} className="bg-slate-100 dark:bg-slate-800/50 border border-slate-200/80 dark:border-slate-700/50 rounded-xl shadow-sm transition-all duration-300">
                                 <div className="p-4 sm:p-6">
                                     <div className="flex items-center gap-3 mb-4">
-                                        <span className="text-blue-500 dark:text-blue-400">{category.icon}</span>
+                                        <span className="text-blue-500 dark:text-blue-400">
+                                            {React.cloneElement(category.icon as React.ReactElement<{ className?: string }>, { className: 'h-6 w-6' })}
+                                        </span>
                                         <h3 className="text-lg font-bold text-slate-800 dark:text-slate-200">{category.name}</h3>
                                     </div>
                                     <div className="flex flex-wrap gap-3">

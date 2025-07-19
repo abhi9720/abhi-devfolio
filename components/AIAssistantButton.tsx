@@ -1,6 +1,6 @@
 import React from 'react';
-import { IconSparkles } from './icons/IconSparkles';
-import { IconX } from './icons/IconX';
+import { HiOutlineSparkles } from 'react-icons/hi';
+import { FiX } from 'react-icons/fi';
 
 interface AIAssistantButtonProps {
     onClick: () => void;
@@ -15,8 +15,8 @@ const AIAssistantButton: React.FC<AIAssistantButtonProps> = ({ onClick, isOpen }
             aria-label={isOpen ? 'Close AI Assistant' : 'Open AI Assistant'}
         >
             <div className="relative h-8 w-8 flex items-center justify-center">
-                <IconSparkles className={`absolute transition-all duration-300 ${isOpen ? 'opacity-0 -rotate-90 scale-0' : 'opacity-100 rotate-0 scale-100'}`} />
-                <IconX className={`h-8 w-8 absolute transition-all duration-300 ${isOpen ? 'opacity-100 rotate-0 scale-100' : 'opacity-0 rotate-90 scale-0'}`} />
+                <HiOutlineSparkles className={`absolute transition-all duration-300 ${isOpen ? 'opacity-0 -rotate-90 scale-0' : 'opacity-100 rotate-0 scale-100'}`} />
+                <FiX className={`h-8 w-8 absolute transition-all duration-300 ${isOpen ? 'opacity-100 rotate-0 scale-100' : 'opacity-0 rotate-90 scale-0'}`} />
             </div>
         </button>
     );

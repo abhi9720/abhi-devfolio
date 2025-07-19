@@ -15,7 +15,7 @@ const Footer: React.FC = () => {
                         className="text-slate-500 dark:text-slate-400 hover:text-blue-500 dark:hover:text-blue-400 transition-colors duration-300"
                     >
                         <span className="sr-only">{link.name}</span>
-                        {link.icon}
+                        {React.cloneElement(link.icon as React.ReactElement<{ className?: string }>, { className: 'h-6 w-6' })}
                     </a>
                 ))}
             </div>
