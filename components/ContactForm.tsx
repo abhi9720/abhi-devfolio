@@ -1,13 +1,13 @@
 import React, { useState } from 'react';
 import { GoogleGenAI, Type } from '@google/genai';
-import { FiUser, FiMail, FiMessageSquare, FiSend } from 'react-icons/fi';
+import { FiUser, FiMail, FiMessageSquare, FiSend, FiAlertTriangle } from 'react-icons/fi';
 import { ImSpinner2 } from 'react-icons/im';
 
+// Use environment variables for configuration.
 const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
 const GEMINI_MODEL = process.env.GEMINI_CHAT_MODEL || 'gemini-2.5-flash';
-
-// This endpoint is now configured to send emails directly.
 const FORMSPREE_ENDPOINT = process.env.FORMSPREE_ENDPOINT;
+
 
 const SectionHeader: React.FC<{ title: string }> = ({ title }) => (
     <div className="sticky top-0 z-10 py-4 mb-4 bg-slate-50/75 dark:bg-slate-900/75 backdrop-blur lg:hidden">
@@ -20,6 +20,9 @@ const ContactForm: React.FC = () => {
     const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
     const [feedbackMessage, setFeedbackMessage] = useState('');
 
+    // Check if the endpoint is configured and not a placeholder
+    const isFormConfigured = !!FORMSPREE_ENDPOINT && !FORMSPREE_ENDPOINT.includes('YOUR_FORM_ID_HERE');
+
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         const { name, value } = e.target;
         setFormData(prev => ({ ...prev, [name]: value }));
@@ -27,6 +30,13 @@ const ContactForm: React.FC = () => {
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+
+        if (!isFormConfigured) {
+            setStatus('error');
+            setFeedbackMessage('This contact form is not configured. Please contact the site administrator.');
+            return;
+        }
+
         if (!formData.name || !formData.email || !formData.message) {
             setStatus('error');
             setFeedbackMessage('Please fill out all fields.');
@@ -49,7 +59,7 @@ const ContactForm: React.FC = () => {
                 contents: prompt,
                 config: { responseMimeType: "application/json", responseSchema: schema },
             });
-            
+
             let category = "General Question";
             try {
                 const jsonResponse = JSON.parse(aiResponse.text);
@@ -91,7 +101,7 @@ const ContactForm: React.FC = () => {
             setFeedbackMessage('Sorry, there was an error sending your message. Please try again later.');
         }
     };
-    
+
     const isSubmittable = formData.name && formData.email && formData.message;
 
     return (
@@ -107,45 +117,54 @@ const ContactForm: React.FC = () => {
                         <p className="text-slate-600 dark:text-slate-400 mb-6">
                             Have a question or want to work together? Fill out the form below. My AI assistant will categorize your message and I'll get back to you soon.
                         </p>
+
+                        {!isFormConfigured && (
+                            <div className="mb-6 flex items-center gap-3 p-3 rounded-lg bg-yellow-100 dark:bg-yellow-500/20 text-yellow-800 dark:text-yellow-300 border border-yellow-200 dark:border-yellow-500/30">
+                                <FiAlertTriangle className="h-5 w-5 flex-shrink-0" />
+                                <span className="text-sm font-medium">This contact form is currently not configured by the site owner.</span>
+                            </div>
+                        )}
+
                         <form onSubmit={handleSubmit} className="space-y-6">
-                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                                <div className="relative">
-                                    <label htmlFor="name" className="sr-only">Name</label>
-                                    <FiUser className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-400 dark:text-slate-500"/>
-                                    <input type="text" name="name" id="name" placeholder="Your Name" required value={formData.name} onChange={handleChange} className="w-full pl-12 pr-4 py-3 rounded-lg border border-slate-300 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 focus:ring-2 focus:ring-blue-500 focus:outline-none transition-colors placeholder-slate-400 dark:placeholder-slate-500" />
+                            <fieldset disabled={!isFormConfigured}>
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                                    <div className="relative">
+                                        <label htmlFor="name" className="sr-only">Name</label>
+                                        <FiUser className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-400 dark:text-slate-500" />
+                                        <input type="text" name="name" id="name" placeholder="Your Name" required value={formData.name} onChange={handleChange} className="w-full pl-12 pr-4 py-3 rounded-lg border border-slate-300 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 focus:ring-2 focus:ring-blue-500 focus:outline-none transition-colors placeholder-slate-400 dark:placeholder-slate-500 disabled:opacity-60" />
+                                    </div>
+                                    <div className="relative">
+                                        <label htmlFor="email" className="sr-only">Email</label>
+                                        <FiMail className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-400 dark:text-slate-500" />
+                                        <input type="email" name="email" id="email" placeholder="Your Email" required value={formData.email} onChange={handleChange} className="w-full pl-12 pr-4 py-3 rounded-lg border border-slate-300 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 focus:ring-2 focus:ring-blue-500 focus:outline-none transition-colors placeholder-slate-400 dark:placeholder-slate-500 disabled:opacity-60" />
+                                    </div>
                                 </div>
-                                <div className="relative">
-                                    <label htmlFor="email" className="sr-only">Email</label>
-                                    <FiMail className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-400 dark:text-slate-500"/>
-                                    <input type="email" name="email" id="email" placeholder="Your Email" required value={formData.email} onChange={handleChange} className="w-full pl-12 pr-4 py-3 rounded-lg border border-slate-300 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 focus:ring-2 focus:ring-blue-500 focus:outline-none transition-colors placeholder-slate-400 dark:placeholder-slate-500" />
+                                <div className="relative mt-6">
+                                    <label htmlFor="message" className="sr-only">Message</label>
+                                    <FiMessageSquare className="absolute left-4 top-5 h-5 w-5 text-slate-400 dark:text-slate-500" />
+                                    <textarea name="message" id="message" placeholder="Your Message" required rows={5} value={formData.message} onChange={handleChange} className="w-full pl-12 pr-4 py-3 rounded-lg border border-slate-300 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 focus:ring-2 focus:ring-blue-500 focus:outline-none transition-colors placeholder-slate-400 dark:placeholder-slate-500 disabled:opacity-60" />
                                 </div>
-                            </div>
-                            <div className="relative">
-                                <label htmlFor="message" className="sr-only">Message</label>
-                                <FiMessageSquare className="absolute left-4 top-5 h-5 w-5 text-slate-400 dark:text-slate-500"/>
-                                <textarea name="message" id="message" placeholder="Your Message" required rows={5} value={formData.message} onChange={handleChange} className="w-full pl-12 pr-4 py-3 rounded-lg border border-slate-300 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 focus:ring-2 focus:ring-blue-500 focus:outline-none transition-colors placeholder-slate-400 dark:placeholder-slate-500" />
-                            </div>
-                            <div>
-                                <button type="submit" disabled={status === 'loading' || !isSubmittable} className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-8 py-3 text-base font-semibold text-white bg-blue-600 rounded-lg hover:bg-blue-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 dark:focus:ring-offset-slate-900 disabled:bg-slate-400 dark:disabled:bg-slate-600 disabled:cursor-not-allowed transition-all duration-300 transform hover:scale-105">
-                                    {status === 'loading' ? (
-                                        <>
-                                            <ImSpinner2 className="h-5 w-5 animate-spin" />
-                                            <span>Categorizing & Sending...</span>
-                                        </>
-                                    ) : (
-                                        <>
-                                            <FiSend className="h-5 w-5" />
-                                            <span>Send Message</span>
-                                        </>
-                                    )}
-                                </button>
-                            </div>
+                                <div className="mt-6">
+                                    <button type="submit" disabled={status === 'loading' || !isSubmittable} className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-8 py-3 text-base font-semibold text-white bg-blue-600 rounded-lg hover:bg-blue-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 dark:focus:ring-offset-slate-900 disabled:bg-slate-400 dark:disabled:bg-slate-600 disabled:cursor-not-allowed transition-all duration-300 transform hover:scale-105">
+                                        {status === 'loading' ? (
+                                            <>
+                                                <ImSpinner2 className="h-5 w-5 animate-spin" />
+                                                <span>Categorizing & Sending...</span>
+                                            </>
+                                        ) : (
+                                            <>
+                                                <FiSend className="h-5 w-5" />
+                                                <span>Send Message</span>
+                                            </>
+                                        )}
+                                    </button>
+                                </div>
+                            </fieldset>
                             {feedbackMessage && status !== 'idle' && (
-                                <div className={`mt-4 text-center p-3 rounded-lg text-sm font-medium transition-opacity duration-300 ${
-                                    status === 'error' ? 'bg-red-100 dark:bg-red-500/20 text-red-700 dark:text-red-300' :
+                                <div className={`mt-4 text-center p-3 rounded-lg text-sm font-medium transition-opacity duration-300 ${status === 'error' ? 'bg-red-100 dark:bg-red-500/20 text-red-700 dark:text-red-300' :
                                     status === 'success' ? 'bg-green-100 dark:bg-green-500/20 text-green-700 dark:text-green-300' :
-                                    'opacity-0'
-                                }`}>
+                                        'opacity-0'
+                                    }`}>
                                     {feedbackMessage}
                                 </div>
                             )}

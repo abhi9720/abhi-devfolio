@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useRef, useLayoutEffect, useMemo, useCallback } from 'react';
 import { GoogleGenAI, Chat } from '@google/genai';
 import jsPDF from 'jspdf';
-import { FiX, FiSend, FiDownload, FiMaximize2, FiMinimize2, FiTrash2, FiMic } from 'react-icons/fi';
+import { FiX, FiSend, FiDownload, FiMaximize2, FiMinimize2, FiTrash2, FiMic, FiSquare, FiStopCircle } from 'react-icons/fi';
 import { HiOutlineSparkles } from 'react-icons/hi';
 import { ImSpinner2 } from 'react-icons/im';
 import { ChatMessage } from '../types';
@@ -11,11 +11,6 @@ import MarkdownRenderer from './MarkdownRenderer';
 import VoiceVisualizer from './VoiceVisualizer';
 
 // --- Web Speech API Type Definitions ---
-// This provides TypeScript with the necessary types for the non-standard
-// Web Speech API, resolving compilation errors.
-
-// Using `any` for event types to keep definitions minimal, as the internal
-// structure is handled dynamically in the component.
 interface SpeechRecognition {
   continuous: boolean;
   interimResults: boolean;
@@ -34,7 +29,6 @@ declare global {
     webkitSpeechRecognition: new () => SpeechRecognition;
   }
 }
-
 
 interface AIChatWindowProps {
   isOpen: boolean;
@@ -103,6 +97,7 @@ const AIChatWindow: React.FC<AIChatWindowProps> = ({ isOpen, onClose, isFullScre
     
     // Voice I/O State
     const [isListening, setIsListening] = useState(false);
+    const [isSpeaking, setIsSpeaking] = useState(false);
     const [speechApi, setSpeechApi] = useState<{
         recognition: SpeechRecognition | null;
         synthesis: SpeechSynthesis | null;
@@ -110,6 +105,7 @@ const AIChatWindow: React.FC<AIChatWindowProps> = ({ isOpen, onClose, isFullScre
     }>({ recognition: null, synthesis: null, isSupported: false });
     
     const forceSpeakNextResponse = useRef(false);
+    const sendMessageRef = useRef<(messageText: string, fromVoice?: boolean) => void>();
 
     const initialMessages: ChatMessage[] = useMemo(() => [{ sender: 'ai', text: "Hello! I'm Abhishek's AI assistant. You can ask me anything about his experience, projects, or skills. How can I help?" }], []);
 
@@ -175,7 +171,9 @@ ${AI_CONTEXT_DOCUMENT}`;
             forceSpeakNextResponse.current = true;
         }
 
-        speechApi.synthesis?.cancel(); // Stop any current speech
+        speechApi.synthesis?.cancel();
+        setIsSpeaking(false);
+        
         const userMessage: ChatMessage = { sender: 'user', text: messageText };
         setMessages(prev => [...prev, userMessage]);
         setIsLoading(true);
@@ -190,14 +188,14 @@ ${AI_CONTEXT_DOCUMENT}`;
             console.error(err);
             setError("Sorry, I'm having trouble connecting. Please try again later.");
             setMessages(prev => prev.filter(m => m !== userMessage));
-            forceSpeakNextResponse.current = false; // Reset on error
+            forceSpeakNextResponse.current = false;
         } finally {
             setIsLoading(false);
         }
     }, [chat, isLoading, speechApi.synthesis, showPrompts]);
+    
+    sendMessageRef.current = sendMessage;
 
-
-    // Effect for initializing Web Speech APIs
     useEffect(() => {
         if (typeof window === 'undefined') return;
 
@@ -210,28 +208,22 @@ ${AI_CONTEXT_DOCUMENT}`;
             return;
         }
 
-        const recognition: SpeechRecognition = new SpeechRecognition();
+        const recognition = new SpeechRecognition();
         recognition.continuous = false;
         recognition.interimResults = true;
         recognition.lang = 'en-US';
 
         recognition.onresult = (event) => {
-            const transcript = Array.from(event.results)
-              .map(result => result[0])
-              .map(result => result.transcript)
-              .join('');
-            
+            const transcript = Array.from(event.results).map(result => result[0]).map(result => result.transcript).join('');
             setUserInput(transcript);
         
             const lastResult = event.results[event.results.length - 1];
             if (lastResult.isFinal && transcript.trim()) {
-                sendMessage(transcript, true);
+                sendMessageRef.current?.(transcript, true);
                 setUserInput('');
             }
         };
-        recognition.onend = () => {
-            setIsListening(false);
-        };
+        recognition.onend = () => setIsListening(false);
         recognition.onerror = (event) => {
             console.error('Speech recognition error:', event.error);
             setIsListening(false);
@@ -239,13 +231,19 @@ ${AI_CONTEXT_DOCUMENT}`;
 
         setSpeechApi({ recognition, synthesis, isSupported: true });
 
-        return () => { // Cleanup on unmount
+        return () => {
             synthesis?.cancel();
             recognition?.abort();
         };
-    }, [sendMessage]);
+    }, []);
     
-    // Effect for speaking AI messages
+    const handleStopSpeech = useCallback(() => {
+        if (speechApi.synthesis) {
+            speechApi.synthesis.cancel();
+            setIsSpeaking(false);
+        }
+    }, [speechApi.synthesis]);
+    
     useEffect(() => {
         if (!speechApi.synthesis || isLoading) return;
 
@@ -253,22 +251,22 @@ ${AI_CONTEXT_DOCUMENT}`;
 
         if (lastMessage?.sender === 'ai' && forceSpeakNextResponse.current) {
             const utterance = new SpeechSynthesisUtterance(cleanTextForSpeech(lastMessage.text));
-            // Reset the flag immediately after deciding to speak.
+            utterance.onstart = () => setIsSpeaking(true);
+            utterance.onend = () => setIsSpeaking(false);
+            utterance.onerror = () => setIsSpeaking(false);
+
             forceSpeakNextResponse.current = false;
-            
             speechApi.synthesis.speak(utterance);
         } else if (forceSpeakNextResponse.current && lastMessage?.sender !== 'ai') {
-             // This is a safety case, if another message (e.g. user) comes in before AI, reset the flag.
             forceSpeakNextResponse.current = false;
         }
     }, [messages, isLoading, speechApi.synthesis]);
 
     useEffect(() => {
-        const historyForGemini = messages.filter(msg => (messages.length > 1) || (msg.sender === 'user')).map(msg => ({ role: msg.sender === 'user' ? 'user' : 'model', parts: [{ text: msg.text }] }));
+        const historyForGemini = messages.slice(1).map(msg => ({ role: msg.sender === 'user' ? 'user' : 'model', parts: [{ text: msg.text }] }));
         const newChat = ai.chats.create({ model: GEMINI_CHAT_MODEL, history: historyForGemini, config: { systemInstruction } });
         setChat(newChat);
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [systemInstruction]);
+    }, [systemInstruction, messages]);
 
     useEffect(() => {
         if (messages.length > 1) {
@@ -301,11 +299,7 @@ ${AI_CONTEXT_DOCUMENT}`;
     }, [messages, showPrompts]);
 
     const handleDownloadChat = async () => {
-        if (messages.length <= 1) {
-            alert("The chat is empty, nothing to download.");
-            return;
-        }
-    
+        if (messages.length <= 1) return;
         setIsDownloading(true);
         try {
             const doc = new jsPDF();
@@ -356,7 +350,6 @@ ${AI_CONTEXT_DOCUMENT}`;
             }
             
             doc.save(`Abhishek_Tiwari_AI_Chat_${new Date().toISOString().slice(0, 10)}.pdf`);
-    
         } catch (err) {
             console.error("Failed to download chat:", err);
             alert("Sorry, there was an error creating the PDF. Please try again.");
@@ -370,18 +363,14 @@ ${AI_CONTEXT_DOCUMENT}`;
         localStorage.removeItem(CHAT_HISTORY_KEY);
         setMessages(initialMessages);
         setShowPrompts(true);
-        const newChat = ai.chats.create({ model: GEMINI_CHAT_MODEL, history: [], config: { systemInstruction } });
-        setChat(newChat);
     };
 
-    const handlePromptClick = (prompt: string) => {
-        sendMessage(prompt);
-    };
+    const handlePromptClick = (prompt: string) => sendMessageRef.current?.(prompt);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         if (!userInput.trim()) return;
-        sendMessage(userInput, false);
+        sendMessageRef.current?.(userInput, false);
         setUserInput('');
     };
 
@@ -435,8 +424,17 @@ ${AI_CONTEXT_DOCUMENT}`;
                     {messages.map((msg, index) => (
                         <div key={index} className={`flex items-end gap-2.5 animate-fade-in-up ${msg.sender === 'user' ? 'justify-end' : ''}`}>
                             {msg.sender === 'ai' && <AIAvatar />}
-                            <div className={`max-w-md p-3 rounded-t-2xl ${msg.sender === 'user' ? 'bg-blue-600 text-white rounded-l-2xl' : 'bg-slate-200 dark:bg-slate-700 text-slate-800 dark:text-slate-200 rounded-r-2xl'}`}>
+                            <div className={`relative max-w-md p-3 rounded-t-2xl ${msg.sender === 'user' ? 'bg-blue-600 text-white rounded-l-2xl' : 'bg-slate-200 dark:bg-slate-700 text-slate-800 dark:text-slate-200 rounded-r-2xl'}`}>
                                 {msg.sender === 'ai' ? <MarkdownRenderer text={msg.text} /> : <p className="text-sm break-words">{msg.text}</p>}
+                                {msg.sender === 'ai' && isSpeaking && index === messages.length - 1 && (
+                                    <button 
+                                        onClick={handleStopSpeech}
+                                        className="absolute -top-3 -right-3 h-7 w-7 bg-white dark:bg-slate-600 rounded-full flex items-center justify-center text-slate-700 dark:text-slate-200 hover:bg-red-200 dark:hover:bg-red-500/50 transition-colors shadow-md"
+                                        aria-label="Stop speaking"
+                                    >
+                                        <FiStopCircle className="h-5 w-5"/>
+                                    </button>
+                                )}
                             </div>
                             {msg.sender === 'user' && <UserAvatar />}
                         </div>
@@ -452,9 +450,7 @@ ${AI_CONTEXT_DOCUMENT}`;
                             <input
                                 type="text"
                                 value={userInput}
-                                onChange={(e) => {
-                                    setUserInput(e.target.value);
-                                }}
+                                onChange={(e) => setUserInput(e.target.value)}
                                 placeholder={isListening ? "" : "Ask about my projects, skills..."}
                                 className={`w-full pl-12 pr-4 py-2.5 rounded-full bg-slate-100 dark:bg-slate-700 text-slate-900 dark:text-slate-200 placeholder-slate-500 dark:placeholder-slate-400 border border-slate-200 dark:border-slate-600 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-300 ${isListening ? 'text-transparent dark:text-transparent' : ''}`}
                                 disabled={isLoading}
@@ -468,7 +464,7 @@ ${AI_CONTEXT_DOCUMENT}`;
                                 className={`absolute left-1.5 top-1/2 -translate-y-1/2 h-9 w-9 flex items-center justify-center rounded-full text-white transition-colors duration-300 disabled:bg-slate-400 dark:disabled:bg-slate-600 z-10 ${isListening ? 'bg-red-500 hover:bg-red-600' : 'bg-blue-600 hover:bg-blue-500'}`}
                                 aria-label={isListening ? "Stop voice input" : "Start voice input"}
                             >
-                                <FiMic className="h-5 w-5" />
+                                {isListening ? <FiSquare className="h-4 w-4" /> : <FiMic className="h-5 w-5" />}
                             </button>
                         </div>
                         <button type="submit" className="h-11 w-11 flex-shrink-0 rounded-full bg-blue-600 text-white flex items-center justify-center hover:bg-blue-500 disabled:bg-slate-400 dark:disabled:bg-slate-600 transition-all duration-200 transform enabled:hover:scale-110" disabled={isLoading || !userInput.trim()}>
