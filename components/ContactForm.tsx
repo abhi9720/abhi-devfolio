@@ -21,7 +21,7 @@ const ContactForm: React.FC = () => {
     const [feedbackMessage, setFeedbackMessage] = useState('');
 
     // Check if the endpoint is configured and not a placeholder
-    const isFormConfigured = !!FORMSPREE_ENDPOINT && !FORMSPREE_ENDPOINT.includes('YOUR_FORM_ID_HERE');
+    const isFormConfigured = !!FORMSPREE_ENDPOINT;
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         const { name, value } = e.target;
