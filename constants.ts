@@ -1,5 +1,5 @@
 import React from 'react';
-import { Experience, Project, SkillCategory, Link, KeyHighlight, CategorizedSkillGroup } from './types';
+import { Experience, Project, SkillCategory, Link, KeyHighlight, CategorizedSkillGroup, Certification, TechRadarData, TechRadarEntry } from './types';
 import { FaGithub, FaLinkedin, FaDev, FaMedium } from 'react-icons/fa';
 import { FiGlobe, FiCode, FiCloud, FiDatabase } from 'react-icons/fi';
 import { HiOutlineMail, HiOutlineDocumentText } from 'react-icons/hi';
@@ -87,6 +87,29 @@ export const EXPERIENCES: Experience[] = [
     ],
     summary: 'Boosted Spring Boot API performance by 25% via Hibernate caching and optimized database workloads by 30% through SQL migration. Deployed and managed highly available services on AWS.',
   },
+  {
+    role: 'Web Developer Intern',
+    company: 'Wizegrid',
+    period: 'Nov 2021 – Jan 2022',
+    location: 'Remote',
+    description: [
+      'Developed a search bar using Elasticsearch for searching user profiles in a database of over 100,000 users.',
+      'Integrated mailing services with auto-triggering using Node-cron for profile reminders and session notifications.',
+      'Facilitated payment methods by integrating the Paytm Payment gateway.',
+    ],
+    summary: 'Developed a high-performance user search with Elasticsearch, integrated automated mailing services with Node-cron, and implemented the Paytm payment gateway.',
+  },
+  {
+    role: 'Backend Developer Intern',
+    company: 'Encomece',
+    period: 'Jul 2021 – Aug 2021',
+    location: 'Remote',
+    description: [
+      'Implemented 2-factor authentication, prevented brute force login attempts, and blocked user profiles for 24 hours from scratch.',
+      'Developed backend APIs and an admin panel for course management, video uploads, and user data in a team of 6.',
+    ],
+    summary: 'Implemented a secure 2-factor authentication system with brute-force prevention and developed backend APIs for a course management platform.',
+  },
 ];
 
 export const PROJECTS: Project[] = [
@@ -137,6 +160,15 @@ export const PROJECTS: Project[] = [
         link: 'https://github.com/abhi9720/Postgram',
         liveDemoUrl: '#',
         imageUrl: 'https://placehold.co/1280x720/1e293b/f1f5f9/png?text=Postgram&font=inter',
+    },
+    {
+        title: 'DSA Task Manager',
+        category: 'Full-Stack',
+        tech: ['Node.js', 'MongoDB', 'Cloudinary', 'Passport-Google-Auth', 'EJS'],
+        tags: ['#Full-Stack', '#Productivity', '#Node.js'],
+        description: 'A productivity web app to track DSA problem-solving progress. Features include adding questions, daily revision prompts, a random picker, and Google OAuth.',
+        link: 'https://github.com/abhi9720/DSA-TASK-MANAGER',
+        imageUrl: 'https://placehold.co/1280x720/1e293b/f1f5f9/png?text=DSA+Task+Manager&font=inter'
     },
     {
         title: 'NotePad PWA',
@@ -198,6 +230,38 @@ export const SKILL_CATEGORIES: CategorizedSkillGroup[] = [
     },
 ];
 
+export const TECH_RADAR_DATA: TechRadarData = {
+  techniques: [
+    { name: 'CI/CD', quadrant: 'techniques', ring: 'adopt', description: 'Automating the build, test, and deployment pipeline for faster releases.' },
+    { name: 'System Design', quadrant: 'techniques', ring: 'trial', description: 'Architecting scalable and resilient systems for high-load scenarios.' },
+    { name: 'Vector DBs (RAG)', quadrant: 'techniques', ring: 'trial', description: 'Enhancing LLMs with external knowledge bases for more accurate, context-aware responses using Retrieval-Augmented Generation.' },
+  ],
+  tools: [
+    { name: 'Docker', quadrant: 'tools', ring: 'adopt', description: 'The de-facto standard for containerizing applications.' },
+    { name: 'Git', quadrant: 'tools', ring: 'adopt', description: 'Essential for version control and collaborative development.' },
+    { name: 'Postman', quadrant: 'tools', ring: 'adopt', description: 'My go-to tool for API development, testing, and documentation.' },
+    { name: 'Kubernetes', quadrant: 'tools', ring: 'trial', description: 'Orchestrating containerized applications at scale. Gaining production experience.' },
+    { name: 'Prometheus', quadrant: 'tools', ring: 'trial', description: 'For monitoring and alerting in cloud-native environments.' },
+    { name: 'LangChain', quadrant: 'tools', ring: 'trial', description: 'A framework for developing applications powered by language models.' },
+  ],
+  platforms: [
+    { name: 'AWS (EC2, RDS, S3, VPC)', quadrant: 'platforms', ring: 'adopt', description: 'Core AWS services for compute, storage, database management, and networking.' },
+    { name: 'Apache Kafka', quadrant: 'platforms', ring: 'adopt', description: 'A distributed event streaming platform for high-throughput data pipelines.' },
+    { name: 'Redis', quadrant: 'platforms', ring: 'adopt', description: 'High-performance in-memory data store used for caching and message brokering.' },
+  ],
+  languagesAndFrameworks: [
+    { name: 'Golang', quadrant: 'languagesAndFrameworks', ring: 'adopt', description: 'My primary language for high-performance, concurrent backend services.' },
+    { name: 'Java', quadrant: 'languagesAndFrameworks', ring: 'adopt', description: 'A robust, object-oriented language used for building enterprise-grade applications with Spring Boot.' },
+    { name: 'Spring Boot', quadrant: 'languagesAndFrameworks', ring: 'adopt', description: 'A powerful framework for creating stand-alone, production-grade Spring based Applications that I use with Java.' },
+    { name: 'React.js', quadrant: 'languagesAndFrameworks', ring: 'adopt', description: 'The go-to library for building modern, interactive user interfaces.' },
+    { name: 'Tailwind CSS', quadrant: 'languagesAndFrameworks', ring: 'adopt', description: 'A utility-first CSS framework that dramatically speeds up UI development.' },
+    { name: 'Node.js', quadrant: 'languagesAndFrameworks', ring: 'trial', description: 'JavaScript runtime for building fast and scalable network applications.' },
+    { name: 'Express.js', quadrant: 'languagesAndFrameworks', ring: 'trial', description: 'Minimalist web framework for Node.js, used in several projects for its speed in building APIs.' },
+    { name: 'Python', quadrant: 'languagesAndFrameworks', ring: 'assess', description: 'Primarily used for scripting and exploring AI/ML libraries.' },
+    { name: 'Angular 10', quadrant: 'languagesAndFrameworks', ring: 'hold', description: 'Have past experience, but currently focusing on React.js for frontend development.' },
+  ]
+};
+
 export const EXAMPLE_PROMPTS: string[] = [
     "Summarize resume.",
     "What are your strongest backend skills?",
@@ -211,6 +275,17 @@ export const EDUCATION = {
   cgpa: '8.8 CGPA',
   coursework: ['Algorithms', 'Databases', 'Operating Systems', 'Computer Networks', 'Machine Learning'],
 };
+
+export const CERTIFICATIONS: Certification[] = [
+  {
+    name: 'Go Design Patterns – Issued Dec 2023',
+    link: 'https://www.linkedin.com/in/abhi9720/details/certifications/?entityUrn=urn%3Ali%3Acertification%3A[credential-id-1]',
+  },
+  {
+    name: 'Go Essentials: Concurrency, Connectivity, and High‑Performance Apps – Issued Nov 2023',
+    link: 'https://www.linkedin.com/in/abhi9720/details/certifications/?entityUrn=urn%3Ali%3Acertification%3A[credential-id-2]',
+  },
+];
 
 
 export const AI_CONTEXT_DOCUMENT = `
@@ -255,6 +330,22 @@ ${PROJECTS.map(p => `
 ${SKILLS.map(cat => `
 - **${cat.name}**: ${cat.skills.join(', ')}
 `).join('\n')}
+
+### Tech Radar
+My tech radar represents my current view on different technologies.
+- **Adopt**: Technologies I have high confidence in and use for production builds.
+- **Trial**: Technologies I have used in projects and am becoming proficient with.
+- **Assess**: Technologies I am currently learning or exploring for future projects.
+- **Hold**: Technologies I have experience with but am not actively using in new projects.
+
+${Object.entries(TECH_RADAR_DATA).map(([quadrant, entries]) => {
+  const quadrantName = quadrant.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase());
+  return `#### ${quadrantName}\n${(entries as TechRadarEntry[]).map(entry => `- ${entry.name} (${entry.ring}): ${entry.description}`).join('\n')}`;
+}).join('\n\n')
+}
+
+### Certifications
+${CERTIFICATIONS.map(cert => `- **${cert.name}**: View at ${cert.link}`).join('\n')}
 
 ### Current Interests
 ${CURRENT_INTERESTS.join(', ')}

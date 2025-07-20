@@ -4,8 +4,8 @@ import { SOCIAL_LINKS } from '../constants';
 const Footer: React.FC = () => {
     return (
         <footer className="py-12 text-center">
-            <div className="flex justify-center items-center space-x-6 mb-4">
-                {SOCIAL_LINKS.map((link) => (
+            <div className="flex justify-center items-center flex-wrap gap-x-6 gap-y-4 mb-4">
+                {SOCIAL_LINKS.filter(l => l.name !== 'Email').map((link) => (
                     <a
                         key={link.name}
                         href={link.url}

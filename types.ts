@@ -56,3 +56,26 @@ export interface ChatMessage {
     sender: 'user' | 'ai';
     text: string;
 }
+
+export interface Certification {
+  name: string;
+  link: string;
+}
+
+export type TechRadarQuadrant = 'techniques' | 'tools' | 'platforms' | 'languagesAndFrameworks';
+export type TechRadarRing = 'adopt' | 'trial' | 'assess' | 'hold';
+
+export interface TechRadarEntry {
+  name: string;
+  quadrant: TechRadarQuadrant;
+  ring: TechRadarRing;
+  description: string;
+  link?: string;
+}
+
+export interface TechRadarData {
+  techniques: TechRadarEntry[];
+  tools: TechRadarEntry[];
+  platforms: TechRadarEntry[];
+  languagesAndFrameworks: TechRadarEntry[];
+}

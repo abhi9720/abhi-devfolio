@@ -13,10 +13,13 @@ const Header: React.FC<HeaderProps> = ({ activeSection }) => {
     const navLinks = [
         { name: 'About', href: '#about', id: 'about' },
         { name: 'Experience', href: '#experience', id: 'experience' },
+        { name: 'Skills', href: '#skills', id: 'skills' },
+        { name: 'Tech Radar', href: '#tech-radar', id: 'tech-radar' },
+        { name: 'Certificates', href: '#certifications', id: 'certifications' },
         { name: 'Projects', href: '#projects', id: 'projects' },
         { name: 'Activity', href: '#github', id: 'github' },
-        { name: 'Skills', href: '#skills', id: 'skills' },
         { name: 'Writing', href: '#publications', id: 'publications' },
+        { name: 'Contact', href: '#contact', id: 'contact' },
     ];
 
     return (
@@ -41,7 +44,7 @@ const Header: React.FC<HeaderProps> = ({ activeSection }) => {
                                 <span>{PERSONAL_INFO.location}</span>
                             </div>
                             <div className="flex items-center flex-wrap gap-x-4 gap-y-2 pt-4">
-                                {SOCIAL_LINKS.filter(l => ['GitHub', 'LinkedIn', 'Email'].includes(l.name)).map((link) => (
+                                {SOCIAL_LINKS.filter(l => ['GitHub', 'LinkedIn'].includes(l.name)).map((link) => (
                                     <a
                                         key={link.name}
                                         href={link.url}

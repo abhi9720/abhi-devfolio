@@ -135,6 +135,7 @@
               shine: 'shine 1.2s ease-out',
               'fade-in-up': 'fade-in-up 0.5s ease-out forwards',
               'bounce-dot': 'bounce-dot 1.4s infinite ease-in-out both',
+              'voice-wave': 'voice-wave 1.2s infinite ease-in-out',
             },
             keyframes: {
               spotlight: {
@@ -158,6 +159,10 @@
               'bounce-dot': {
                 '0%, 80%, 100%': { transform: 'scale(0)' },
                 '40%': { transform: 'scale(1.0)' },
+              },
+              'voice-wave': {
+                '0%, 100%': { transform: 'scaleY(0.1)' },
+                '50%': { transform: 'scaleY(1)' },
               },
             },
           }

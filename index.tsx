@@ -9,6 +9,7 @@ import {
 } from 'react-router-dom';
 import App from './App';
 import { ThemeProvider, useTheme } from './contexts/ThemeContext';
+import DashboardPage from './dashboard';
 
 // A generic error page to catch routing errors and rendering errors.
 // This will provide more detailed feedback than the default 404.
@@ -59,9 +60,9 @@ const RootLayout = () => {
 
 // Wrap the ErrorBoundary in the ThemeProvider so it can use the theme context.
 const ThemedErrorBoundary = () => (
-    <ThemeProvider>
-        <ErrorBoundary />
-    </ThemeProvider>
+  <ThemeProvider>
+    <ErrorBoundary />
+  </ThemeProvider>
 );
 
 // The router configuration with a root layout and error boundary.
@@ -74,6 +75,10 @@ const router = createHashRouter([
       {
         path: '/',
         element: <App />,
+      },
+      {
+        path: '/dashboard',
+        element: <DashboardPage />,
       },
     ],
   },

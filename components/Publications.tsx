@@ -51,7 +51,7 @@ const ArticleCard: React.FC<{ article: Article }> = ({ article }) => {
                 <p className="text-xs text-slate-500 dark:text-slate-500">
                     {new Date(article.pubDate).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })}
                 </p>
-                <div className="flex items-center gap-1 text-sm font-semibold text-blue-600 dark:text-blue-400">
+                <div className="flex items-center gap-1.5 text-sm font-semibold text-blue-600 dark:text-blue-400">
                     Read More <FiExternalLink className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
                 </div>
             </div>

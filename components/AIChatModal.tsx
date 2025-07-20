@@ -1,13 +1,39 @@
-import React, { useEffect, useState, useRef, useLayoutEffect, useMemo } from 'react';
+import React, { useEffect, useState, useRef, useLayoutEffect, useMemo, useCallback } from 'react';
 import { GoogleGenAI, Chat } from '@google/genai';
 import jsPDF from 'jspdf';
-import { FiX, FiSend, FiDownload, FiMaximize2, FiMinimize2, FiTrash2 } from 'react-icons/fi';
+import { FiX, FiSend, FiDownload, FiMaximize2, FiMinimize2, FiTrash2, FiMic } from 'react-icons/fi';
 import { HiOutlineSparkles } from 'react-icons/hi';
 import { ImSpinner2 } from 'react-icons/im';
 import { ChatMessage } from '../types';
 import { AI_CONTEXT_DOCUMENT, EXAMPLE_PROMPTS } from '../constants';
 import TypingIndicator from './TypingIndicator';
 import MarkdownRenderer from './MarkdownRenderer';
+import VoiceVisualizer from './VoiceVisualizer';
+
+// --- Web Speech API Type Definitions ---
+// This provides TypeScript with the necessary types for the non-standard
+// Web Speech API, resolving compilation errors.
+
+// Using `any` for event types to keep definitions minimal, as the internal
+// structure is handled dynamically in the component.
+interface SpeechRecognition {
+  continuous: boolean;
+  interimResults: boolean;
+  lang: string;
+  onresult: (event: any) => void;
+  onend: () => void;
+  onerror: (event: any) => void;
+  start(): void;
+  stop(): void;
+  abort(): void;
+}
+
+declare global {
+  interface Window {
+    SpeechRecognition: new () => SpeechRecognition;
+    webkitSpeechRecognition: new () => SpeechRecognition;
+  }
+}
 
 
 interface AIChatWindowProps {
@@ -19,8 +45,16 @@ interface AIChatWindowProps {
 
 const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
 const CHAT_HISTORY_KEY = 'ai_chat_history';
+const GEMINI_CHAT_MODEL = process.env.GEMINI_CHAT_MODEL || 'gemini-2.5-flash';
 
-// --- Helper Components ---
+// --- Helper Functions & Components ---
+const cleanTextForSpeech = (text: string) => {
+    return text
+        .replace(/\*\*(.*?)\*\*/g, '$1') // Remove bold markdown
+        .replace(/\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/g, '$1') // Keep only the text from links
+        .replace(/`([^`]+)`/g, '$1') // Remove inline code ticks
+        .replace(/#+\s?/g, ''); // Remove header hashes
+};
 
 const AIAvatar = () => (
     <div className="h-8 w-8 rounded-full bg-gradient-to-br from-blue-500 to-cyan-400 flex items-center justify-center flex-shrink-0 text-white shadow">
@@ -67,6 +101,16 @@ const AIChatWindow: React.FC<AIChatWindowProps> = ({ isOpen, onClose, isFullScre
     const [error, setError] = useState<string | null>(null);
     const chatContainerRef = useRef<HTMLDivElement>(null);
     
+    // Voice I/O State
+    const [isListening, setIsListening] = useState(false);
+    const [speechApi, setSpeechApi] = useState<{
+        recognition: SpeechRecognition | null;
+        synthesis: SpeechSynthesis | null;
+        isSupported: boolean;
+    }>({ recognition: null, synthesis: null, isSupported: false });
+    
+    const forceSpeakNextResponse = useRef(false);
+
     const initialMessages: ChatMessage[] = useMemo(() => [{ sender: 'ai', text: "Hello! I'm Abhishek's AI assistant. You can ask me anything about his experience, projects, or skills. How can I help?" }], []);
 
     const [messages, setMessages] = useState<ChatMessage[]>(() => {
@@ -88,57 +132,50 @@ const AIChatWindow: React.FC<AIChatWindowProps> = ({ isOpen, onClose, isFullScre
     
     const systemInstruction = useMemo(() => {
         const today = new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
-        return `You are a helpful and friendly AI assistant representing Abhishek Tiwari. The current date is ${today}. Your answers must be based *only* on the information provided in the context document below.
+        return `You are a helpful and friendly AI assistant for Abhishek Tiwari's portfolio. The current date is ${today}.
+Your answers must be based *only* on the information provided in the context document.
 
 **Response Guidelines:**
-1.  **Persona & Tone:** Always respond in the first person ("I"). Be professional, confident, and helpful. Do not mention that you are an AI or that you're referencing a document.
-2.  **Experience Calculation:**
-    *   When asked for general experience with a skill (e.g., "experience in AWS"), calculate the total duration from the start date of the *earliest* role where that skill was used until today. This includes internships.
-    *   If asked specifically for **"full-time experience"**, you MUST recalculate the duration, excluding any roles explicitly marked as "Intern".
-3.  **Handling Skill Gaps:**
-    *   If asked about a skill I do *not* have listed (e.g., "Bootstrap"), do not just say you can't answer.
-    *   First, state clearly that I don't have professional experience with that specific tool (e.g., "I haven't used Bootstrap in a professional project.").
-    *   Then, pivot to a related, relevant skill I *do* have (e.g., "However, I'm highly proficient in Tailwind CSS for creating responsive UIs.").
-    *   Conclude by expressing an eagerness to learn new technologies.
-4.  **Out-of-Scope Questions:** For questions not related to my professional background, politely decline by saying something like: "I can only answer questions related to my professional background."
-5.  **Formatting:** Use only plain text. The only exception is for links. When providing a link, you MUST use markdown format like \`[Descriptive Text](URL)\`. The link text should be descriptive (e.g., "View my Resume") and NOT the raw URL. Do not use any other markdown (no bold, no lists).
 
-Here is the document about my professional background:
+1.  **Persona:** Always respond in the first person ("I" or "my"). Be professional, confident, and helpful. Do not say you are an AI or that you're using a document.
+
+2.  **CRITICAL - Years of Experience (YOE) Calculation:**
+    When asked about my **total experience** with a skill (e.g., "experience in Java"), follow these steps:
+    A. **Find the EARLIEST START DATE** for that skill from my entire work history (including internships). For Java, this is **March 2023**. For Go, this is **November 2023**. For Node.js, this is **November 2021**.
+    B. **Calculate TOTAL DURATION** from that earliest start date to today, ${today}.
+    C. **State the TOTAL DURATION** clearly. Example: "I have been working with Java since March 2023, giving me a total of over X years/months of experience."
+    
+    When asked for **FULL-TIME experience** (or similar phrasing), use these specific rules instead:
+    A. For **Java**, my full-time experience began in **April 2024**. Calculate the duration from that date to today.
+    B. For **Go (Golang)**, my full-time experience began in **November 2023**. Calculate the duration from that date to today.
+    C. For **Node.js**, respond with: "My experience with Node.js comes from internships and various full-stack projects, amounting to about 1.5 years."
+    D. **Do not mention internships** when stating the duration of *full-time* experience for Java and Go. Just state the calculated duration.
+
+    **IMPORTANT RULES FOR YOE:**
+    - **DO NOT SHOW YOUR MATH.** Do not explain how you calculated the number. Just state the final duration.
+    - Round to the nearest month.
+
+3.  **Skill Gaps:**
+    *   If asked about a skill I don't have (e.g., "Bootstrap"), first state that I don't have professional experience with it.
+    *   Then, pivot to a related skill I *do* have. Example: "I haven't used Bootstrap in a professional project. However, I am highly proficient with Tailwind CSS for building responsive UIs."
+
+4.  **Out-of-Scope Questions:** For questions not about my professional background, politely decline. Say something like: "My purpose is to answer questions about Abhishek's professional background, so I can't help with that."
+
+5.  **Formatting:** Use Markdown for formatting (like **bold** or lists). When providing a link, use the format: [Descriptive Text](URL).
+
+Here is the context document about my professional background:
+---
 ${AI_CONTEXT_DOCUMENT}`;
     }, []);
-
-    useEffect(() => {
-        const historyForGemini = messages.filter(msg => (messages.length > 1) || (msg.sender === 'user')).map(msg => ({ role: msg.sender === 'user' ? 'user' : 'model', parts: [{ text: msg.text }] }));
-        const newChat = ai.chats.create({ model: 'gemini-2.5-flash', history: historyForGemini, config: { systemInstruction } });
-        setChat(newChat);
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [systemInstruction]);
-
-    useEffect(() => {
-        if (messages.length > 1) {
-             localStorage.setItem(CHAT_HISTORY_KEY, JSON.stringify(messages));
-             if (showPrompts) setShowPrompts(false);
-        } else {
-             localStorage.removeItem(CHAT_HISTORY_KEY);
-        }
-    }, [messages, showPrompts]);
-
-    useEffect(() => {
-        if (!isOpen) return;
-        const handleEsc = (event: KeyboardEvent) => { event.key === 'Escape' && (isFullScreen ? setIsFullScreen(false) : onClose()); };
-        window.addEventListener('keydown', handleEsc);
-        return () => window.removeEventListener('keydown', handleEsc);
-    }, [isOpen, onClose, isFullScreen, setIsFullScreen]);
-
-    useLayoutEffect(() => {
-        if (chatContainerRef.current) {
-            chatContainerRef.current.scrollTo({ top: chatContainerRef.current.scrollHeight, behavior: 'smooth' });
-        }
-    }, [messages, showPrompts]);
-
-    const sendMessage = async (messageText: string) => {
+    
+    const sendMessage = useCallback(async (messageText: string, fromVoice: boolean = false) => {
         if (!messageText.trim() || isLoading || !chat) return;
+        
+        if (fromVoice) {
+            forceSpeakNextResponse.current = true;
+        }
 
+        speechApi.synthesis?.cancel(); // Stop any current speech
         const userMessage: ChatMessage = { sender: 'user', text: messageText };
         setMessages(prev => [...prev, userMessage]);
         setIsLoading(true);
@@ -153,10 +190,115 @@ ${AI_CONTEXT_DOCUMENT}`;
             console.error(err);
             setError("Sorry, I'm having trouble connecting. Please try again later.");
             setMessages(prev => prev.filter(m => m !== userMessage));
+            forceSpeakNextResponse.current = false; // Reset on error
         } finally {
             setIsLoading(false);
         }
-    };
+    }, [chat, isLoading, speechApi.synthesis, showPrompts]);
+
+
+    // Effect for initializing Web Speech APIs
+    useEffect(() => {
+        if (typeof window === 'undefined') return;
+
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        const synthesis = window.speechSynthesis;
+        const isSupported = !!SpeechRecognition && !!synthesis;
+
+        if (!isSupported) {
+            setSpeechApi({ recognition: null, synthesis: null, isSupported: false });
+            return;
+        }
+
+        const recognition: SpeechRecognition = new SpeechRecognition();
+        recognition.continuous = false;
+        recognition.interimResults = true;
+        recognition.lang = 'en-US';
+
+        recognition.onresult = (event) => {
+            const transcript = Array.from(event.results)
+              .map(result => result[0])
+              .map(result => result.transcript)
+              .join('');
+            
+            setUserInput(transcript);
+        
+            const lastResult = event.results[event.results.length - 1];
+            if (lastResult.isFinal && transcript.trim()) {
+                sendMessage(transcript, true);
+                setUserInput('');
+            }
+        };
+        recognition.onend = () => {
+            setIsListening(false);
+        };
+        recognition.onerror = (event) => {
+            console.error('Speech recognition error:', event.error);
+            setIsListening(false);
+        };
+
+        setSpeechApi({ recognition, synthesis, isSupported: true });
+
+        return () => { // Cleanup on unmount
+            synthesis?.cancel();
+            recognition?.abort();
+        };
+    }, [sendMessage]);
+    
+    // Effect for speaking AI messages
+    useEffect(() => {
+        if (!speechApi.synthesis || isLoading) return;
+
+        const lastMessage = messages[messages.length - 1];
+
+        if (lastMessage?.sender === 'ai' && forceSpeakNextResponse.current) {
+            const utterance = new SpeechSynthesisUtterance(cleanTextForSpeech(lastMessage.text));
+            // Reset the flag immediately after deciding to speak.
+            forceSpeakNextResponse.current = false;
+            
+            speechApi.synthesis.speak(utterance);
+        } else if (forceSpeakNextResponse.current && lastMessage?.sender !== 'ai') {
+             // This is a safety case, if another message (e.g. user) comes in before AI, reset the flag.
+            forceSpeakNextResponse.current = false;
+        }
+    }, [messages, isLoading, speechApi.synthesis]);
+
+    useEffect(() => {
+        const historyForGemini = messages.filter(msg => (messages.length > 1) || (msg.sender === 'user')).map(msg => ({ role: msg.sender === 'user' ? 'user' : 'model', parts: [{ text: msg.text }] }));
+        const newChat = ai.chats.create({ model: GEMINI_CHAT_MODEL, history: historyForGemini, config: { systemInstruction } });
+        setChat(newChat);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [systemInstruction]);
+
+    useEffect(() => {
+        if (messages.length > 1) {
+             localStorage.setItem(CHAT_HISTORY_KEY, JSON.stringify(messages));
+             if (showPrompts) setShowPrompts(false);
+        } else {
+             localStorage.removeItem(CHAT_HISTORY_KEY);
+        }
+    }, [messages, showPrompts]);
+    
+    const handleClose = useCallback(() => {
+        speechApi.synthesis?.cancel();
+        if (isListening) speechApi.recognition?.stop();
+        onClose();
+    }, [isListening, onClose, speechApi.recognition, speechApi.synthesis]);
+    
+    useEffect(() => {
+        if (!isOpen) return;
+        const handleEsc = (event: KeyboardEvent) => {
+            if (event.key === 'Escape') isFullScreen ? setIsFullScreen(false) : handleClose();
+        };
+        window.addEventListener('keydown', handleEsc);
+        return () => window.removeEventListener('keydown', handleEsc);
+    }, [isOpen, handleClose, isFullScreen, setIsFullScreen]);
+
+    useLayoutEffect(() => {
+        if (chatContainerRef.current) {
+            chatContainerRef.current.scrollTo({ top: chatContainerRef.current.scrollHeight, behavior: 'smooth' });
+        }
+    }, [messages, showPrompts]);
 
     const handleDownloadChat = async () => {
         if (messages.length <= 1) {
@@ -173,7 +315,6 @@ ${AI_CONTEXT_DOCUMENT}`;
             const maxLineWidth = pageWidth - margin * 2;
             let y = 20;
     
-            // Document Header
             doc.setFontSize(18);
             doc.setFont('helvetica', 'bold');
             doc.text("AI Career Assistant Chat Log", pageWidth / 2, y, { align: 'center' });
@@ -181,43 +322,37 @@ ${AI_CONTEXT_DOCUMENT}`;
             
             doc.setFontSize(10);
             doc.setFont('helvetica', 'normal');
-            doc.setTextColor(100); // Gray color
+            doc.setTextColor(100);
             doc.text(`Downloaded on: ${new Date().toLocaleString()}`, pageWidth / 2, y, { align: 'center' });
             y += 15;
             
-            // Separator Line
-            doc.setDrawColor(226, 232, 240); // slate-200
+            doc.setDrawColor(226, 232, 240);
             doc.line(margin, y, pageWidth - margin, y);
             y += 10;
             
-            // Use slice(1) to skip the initial intro message
             for (const message of messages.slice(1)) {
-                if (y > pageHeight - margin) { // Check for page break
+                if (y > pageHeight - margin) {
                     doc.addPage();
                     y = margin;
                 }
     
                 const isUser = message.sender === 'user';
                 const label = isUser ? "You:" : "AI Assistant:";
-                
-                // Convert markdown links to a readable format for PDFs
                 const textToRender = message.text.replace(/\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/g, '$1 ($2)');
                 const lines = doc.splitTextToSize(textToRender, maxLineWidth);
     
-                // --- Message Sender Label ---
                 doc.setFontSize(11);
                 doc.setFont('helvetica', 'bold');
-                doc.setTextColor(isUser ? 37 : 8, isUser ? 99 : 145, isUser ? 235 : 178); // RGB for blue-600 and cyan-600
+                doc.setTextColor(isUser ? 37 : 8, isUser ? 99 : 145, isUser ? 235 : 178);
                 doc.text(label, margin, y);
                 y += 6;
     
-                // --- Message Text ---
                 doc.setFontSize(11);
                 doc.setFont('helvetica', 'normal');
-                doc.setTextColor(15, 23, 42); // RGB for slate-900
+                doc.setTextColor(15, 23, 42);
                 
                 doc.text(lines, margin, y);
-                y += lines.length * 5 + 8; // Update y based on number of lines + padding
+                y += lines.length * 5 + 8;
             }
             
             doc.save(`Abhishek_Tiwari_AI_Chat_${new Date().toISOString().slice(0, 10)}.pdf`);
@@ -231,11 +366,11 @@ ${AI_CONTEXT_DOCUMENT}`;
     };
 
     const handleClearChat = () => {
+        speechApi.synthesis?.cancel();
         localStorage.removeItem(CHAT_HISTORY_KEY);
         setMessages(initialMessages);
         setShowPrompts(true);
-        // Re-initialize the chat instance to clear its memory
-        const newChat = ai.chats.create({ model: 'gemini-2.5-flash', history: [], config: { systemInstruction } });
+        const newChat = ai.chats.create({ model: GEMINI_CHAT_MODEL, history: [], config: { systemInstruction } });
         setChat(newChat);
     };
 
@@ -246,8 +381,18 @@ ${AI_CONTEXT_DOCUMENT}`;
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         if (!userInput.trim()) return;
-        sendMessage(userInput);
+        sendMessage(userInput, false);
         setUserInput('');
+    };
+
+    const handleToggleListening = () => {
+        if (!speechApi.recognition) return;
+        if (isListening) {
+            speechApi.recognition.stop();
+        } else {
+            speechApi.recognition.start();
+        }
+        setIsListening(prev => !prev);
     };
     
     const isChatPristine = messages.length <= 1;
@@ -280,7 +425,7 @@ ${AI_CONTEXT_DOCUMENT}`;
                         <button title={isFullScreen ? 'Exit Fullscreen' : 'Enter Fullscreen'} onClick={toggleFullScreen} className="p-2 rounded-full text-slate-500 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors" aria-label={isFullScreen ? 'Exit fullscreen' : 'Enter fullscreen'}>
                             {isFullScreen ? <FiMinimize2 className="h-5 w-5" /> : <FiMaximize2 className="h-5 w-5" />}
                         </button>
-                        <button title="Close" onClick={onClose} className="p-2 rounded-full text-slate-500 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors" aria-label="Close">
+                        <button title="Close" onClick={handleClose} className="p-2 rounded-full text-slate-500 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors" aria-label="Close">
                             <FiX className="h-6 w-6" />
                         </button>
                     </div>
@@ -303,14 +448,29 @@ ${AI_CONTEXT_DOCUMENT}`;
 
                 <footer className="flex-shrink-0 border-t border-slate-200 dark:border-slate-800 p-2 sm:p-4 bg-white/50 dark:bg-slate-800/50">
                     <form onSubmit={handleSubmit} className="flex items-center gap-2">
-                        <input
-                            type="text"
-                            value={userInput}
-                            onChange={(e) => setUserInput(e.target.value)}
-                            placeholder="Ask about my projects, skills..."
-                            className="w-full px-4 py-2.5 rounded-full bg-slate-100 dark:bg-slate-700 text-slate-900 dark:text-slate-200 placeholder-slate-500 dark:placeholder-slate-400 border border-slate-200 dark:border-slate-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            disabled={isLoading}
-                        />
+                        <div className="relative flex-grow">
+                            <input
+                                type="text"
+                                value={userInput}
+                                onChange={(e) => {
+                                    setUserInput(e.target.value);
+                                }}
+                                placeholder={isListening ? "" : "Ask about my projects, skills..."}
+                                className={`w-full pl-12 pr-4 py-2.5 rounded-full bg-slate-100 dark:bg-slate-700 text-slate-900 dark:text-slate-200 placeholder-slate-500 dark:placeholder-slate-400 border border-slate-200 dark:border-slate-600 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-300 ${isListening ? 'text-transparent dark:text-transparent' : ''}`}
+                                disabled={isLoading}
+                            />
+                            <VoiceVisualizer isListening={isListening} />
+                             <button 
+                                type="button" 
+                                onClick={handleToggleListening}
+                                disabled={!speechApi.isSupported || isLoading}
+                                title={isListening ? "Stop Listening" : "Use Voice"}
+                                className={`absolute left-1.5 top-1/2 -translate-y-1/2 h-9 w-9 flex items-center justify-center rounded-full text-white transition-colors duration-300 disabled:bg-slate-400 dark:disabled:bg-slate-600 z-10 ${isListening ? 'bg-red-500 hover:bg-red-600' : 'bg-blue-600 hover:bg-blue-500'}`}
+                                aria-label={isListening ? "Stop voice input" : "Start voice input"}
+                            >
+                                <FiMic className="h-5 w-5" />
+                            </button>
+                        </div>
                         <button type="submit" className="h-11 w-11 flex-shrink-0 rounded-full bg-blue-600 text-white flex items-center justify-center hover:bg-blue-500 disabled:bg-slate-400 dark:disabled:bg-slate-600 transition-all duration-200 transform enabled:hover:scale-110" disabled={isLoading || !userInput.trim()}>
                             <FiSend className="h-5 w-5" />
                         </button>

@@ -4,8 +4,10 @@ import About from './components/About';
 import Experience from './components/Experience';
 import Projects from './components/Projects';
 import Skills from './components/Skills';
+import TechRadar from './components/TechRadar';
 import Publications from './components/Publications';
 import Footer from './components/Footer';
+import ContactForm from './components/ContactForm';
 import AnimatedSection from './components/AnimatedSection';
 import { useScrollSpy } from './hooks/useScrollSpy';
 import GitHubActivity from './components/GitHubActivity';
@@ -13,6 +15,7 @@ import { useTheme } from './contexts/ThemeContext';
 import AIAssistantButton from './components/AIAssistantButton';
 import AIChatModal from './components/AIChatModal';
 import ThemeToggle from './components/ThemeToggle';
+import Certifications from './components/Certifications';
 
 const App: React.FC = () => {
   const [coords, setCoords] = useState({ x: -1000, y: -1000 });
@@ -34,7 +37,7 @@ const App: React.FC = () => {
     };
   }, []);
 
-  const sectionIds = ['about', 'experience', 'projects', 'github', 'skills', 'publications'];
+  const sectionIds = ['about', 'experience', 'skills', 'tech-radar', 'certifications', 'projects', 'github', 'publications', 'contact'];
   const activeSection = useScrollSpy(sectionIds);
 
   const toggleAIChat = useCallback(() => {
@@ -65,10 +68,13 @@ const App: React.FC = () => {
         <main className="space-y-20 sm:space-y-24 md:space-y-32 pb-20">
           <AnimatedSection><About /></AnimatedSection>
           <AnimatedSection><Experience /></AnimatedSection>
+          <AnimatedSection><Skills /></AnimatedSection>
+          <AnimatedSection><TechRadar /></AnimatedSection>
+          <AnimatedSection><Certifications /></AnimatedSection>
           <AnimatedSection><Projects /></AnimatedSection>
           <AnimatedSection><GitHubActivity /></AnimatedSection>
-          <AnimatedSection><Skills /></AnimatedSection>
           <AnimatedSection><Publications /></AnimatedSection>
+          <AnimatedSection><ContactForm /></AnimatedSection>
         </main>
         <Footer />
       </div>
