@@ -238,7 +238,7 @@ export const PROJECTS: Project[] = [
       "Redux",
       "Material-UI"
     ],
-    "tags": [],
+    "tags": ["#Authentication", "#JWT", "#REST API", "#CRUD", "#Social Networking", "#Full-Stack App"],
     "description": "Backend services for a developer social platform: user authentication (JWT), profile CRUD, posting content, following, commenting, and social interaction endpoints. Focused on secure REST APIs and modular architecture for community-driven development.",
     "link": "https://github.com/abhi9720/devconnector-backend",
     "imageUrl": "https://abhi-9720.github.io/img/dev/discuss.png",
@@ -248,7 +248,7 @@ export const PROJECTS: Project[] = [
     "title": "Yelp Camp",
     "category": "Full-Stack",
     "tech": ["Node.js", "Express.js", "MongoDB", "Mongoose", "Passport.js", "EJS", "Cloudinary", "Mapbox", "Bootstrap"],
-    "tags": ["Authentication", "CRUD", "Geo-search", "Image Upload", "Reviews"],
+    "tags": ["#Authentication", "#CRUD", "#Geo-search", "#Image Upload", "#Reviews"],
     "description": "Full-stack Node.js MVC web app enabling users to register/login, and perform full CRUD on campgrounds and reviews. Features include geo-mapping with Mapbox, image uploads via Cloudinary, session-based auth, clustered map search, flash-status messages, rating and filtering by rating.",
     "link": "https://github.com/abhi9720/yelp-camp",
     "liveDemoUrl": "#",
