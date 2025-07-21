@@ -1,12 +1,18 @@
 import React from 'react';
-import { Experience, Project, SkillCategory, Link, KeyHighlight, CategorizedSkillGroup, Certification, TechRadarData, TechRadarEntry } from './types';
-import { FaDev, FaGithub, FaLinkedin, FaMedium } from 'react-icons/fa';
-import { HiOutlineDocumentText, HiOutlineMail } from 'react-icons/hi';
-import { FiCloud, FiCode, FiDatabase, FiGlobe } from 'react-icons/fi';
-import { SiLeetcode } from 'react-icons/si';
-import { BsFillDiagram3Fill } from 'react-icons/bs';
-import { RiBrainLine } from 'react-icons/ri';
-import { IconTrophy } from './components/icons/IconTrophy';
+import { Experience, Project, SkillCategory, Link, KeyHighlight, CategorizedSkillGroup, Certification, TechRadarData, TechRadarEntry
+} from './types';
+import { FaDev, FaGithub, FaLinkedin, FaMedium
+} from 'react-icons/fa';
+import { HiOutlineDocumentText, HiOutlineMail
+} from 'react-icons/hi';
+import { FiCloud, FiCode, FiDatabase, FiGlobe
+} from 'react-icons/fi';
+import { SiLeetcode
+} from 'react-icons/si';
+import { RiBrainLine
+} from 'react-icons/ri';
+import { BsFillDiagram3Fill
+} from 'react-icons/bs';
 
 
 export const PERSONAL_INFO = {
@@ -20,7 +26,7 @@ export const PERSONAL_INFO = {
   "summary": "Backend-leaning full-stack Software Engineer with strong foundations in Golang, Java, Spring Boot, Distributed Systems, and Cloud Architecture. Proven experience handling high-load systems (100K+ req/day), real-time pipelines, and LLM-based applications. Fast adopter of emerging technologies like vector search, RAG, and Kubernetes-based microservices."
 };
 
-export const RESUME_LINK = 'https://drive.google.com/file/d/1UWDYhLGwUqb5UhvK9uq5nN1GkCFxF3FQ/preview';
+export const RESUME_LINK = 'https: //drive.google.com/file/d/1UWDYhLGwUqb5UhvK9uq5nN1GkCFxF3FQ/preview';
 
 export const SOCIAL_LINKS: Link[] = [
   {
@@ -68,33 +74,37 @@ export const SOCIAL_LINKS: Link[] = [
 export const KEY_HIGHLIGHTS: KeyHighlight[] = [
   {
     "metric": "100K+ req/day",
-    "description": "Handled microservices & achieved a 35% latency drop.",
-    "icon": React.createElement(IconTrophy)
+    "description": "Built scalable REST APIs using Spring Boot, optimized with Redis and connection pooling to reduce response time by 35% and improve SLA adherence",
+    "icon": React.createElement(FiCode)
   },
   {
-    "metric": "99.9% Reliability",
-    "description": "Built a resilient async distributed task system.",
-    "icon": React.createElement(IconTrophy)
+    "metric": "20K+ QPS with <100ms latency",
+    "description": "Developed a tenant-aware Global Search API using Elasticsearch and Kafka (via Debezium CDC) to enable real-time, full-text LMS search.",
+    "icon": React.createElement(RiBrainLine)
   },
   {
-    "metric": "50K+ Daily Users",
-    "description": "Engineered a real-time gamification platform.",
-    "icon": React.createElement(IconTrophy)
+    "metric": "99.9% task success rate",
+    "description": "Designed a fault-tolerant distributed task system in Go using Asynq, Redis, and Kubernetes with Prometheus-based monitoring and DLQ support",
+    "icon": React.createElement(BsFillDiagram3Fill)
   }
 ];
 
 export const EXPERIENCES: Experience[] = [
   {
-    "role": "Software Development Engineer I",
+    "role": "Software Development Engineer",
     "company": "PeopleStrong",
     "period": "Apr 2024 – Present",
     "location": "Bangalore, India",
     "description": [
-      "Built microservices using Java + Spring Boot handling 100K+ requests/day with 35% latency improvement using Redis caching and connection pooling.",
-      "Developed a real-time gamification engine and ILT attendance system processing 50K+ daily API calls using Go, Kafka, and Redis.",
-      "Designed a secure RBAC system using Spring Security and industry design patterns."
+      "Delivered high-traffic REST APIs via Spring Boot microservice handling 100K+ API requests/day, reducing response time by 35% using Redis caching and connection pooling, improving SLA adherence.",
+      "Engineered a gamification engine in Go, Redis, and Kafka, processing over 10,000 events per minute to track engagement metrics (course completion, skill achievements), driving user motivation via points, badges, certificates.",
+      "Built a scalable Role-Based Access Control (RBAC) system using Strategy, Factory, and Proxy design patterns; enforced permissions via AOP and Spring Security to ensure secure, scalable access control across the LMS.",
+      "Engineered a real-time ILT Attendance System handling 50K+ daily API hits, ensuring consistent performance during peak training hours through asynchronous processing and optimized database queries.",
+      "Developed a scalable, tenant-aware Global Search API using Spring Boot, Elasticsearch, enabling real-time, full-text search across courses, wikis, certificates, and catalogs with 20K+ QPS and < 100ms latency.",
+      "Integrated real-time data synchronization from MySQL to Elasticsearch using Debezium and Kafka for Change Data Capture (CDC), enabling consistent, low-latency indexing with row-based tenant isolation across all entities.",
+      "Architected a Course Rating & Review System using Spring Boot, MySQL, and Redis, leveraging write-through caching and lazy cache population to deliver 3× faster read performance and enable consistent, scalable feedback tracking across high-traffic catalogs — contributing to a 28% increase in enrollments."
     ],
-    "summary": "Built scalable Java microservices for 100K+ daily requests and a real-time gamification engine with Go & Kafka. Optimized latency by 35% using Redis and designed a secure RBAC system."
+    "summary": "Delivered high-throughput microservices in Spring Boot and Go, powering 100K+ daily requests and 20K+ QPS real-time search with <100ms latency using Redis, Kafka, and Elasticsearch.\nBuilt gamification, ILT attendance, RBAC, and feedback systems using design patterns, AOP, and CDC (Debezium + Kafka), enhancing engagement, access control, and SLA adherence.\nAchieved 35% latency reduction, 3× faster reads, and 28% boost in course enrollments through caching strategies, async processing, and optimized multi-tenant architecture."
   },
   {
     "role": "Associate Software Engineer",
@@ -102,8 +112,9 @@ export const EXPERIENCES: Experience[] = [
     "period": "Nov 2023 – Mar 2024",
     "location": "Bangalore, India",
     "description": [
-      "Created a distributed async task system using Go, Redis, Asynq, integrated DLQ handling and monitoring via Prometheus.",
-      "Deployed the system on Kubernetes with auto-scaling, achieving 99.9% success rate."
+      "Designed a scalable distributed task execution system using Go, Redis, and Asynq to process background tasks asynchronously with automatic retries, a Dead-Letter Queue (DLQ), and fault tolerance.",
+      "Developed a worker pool system orchestrated with Kubernetes, enabling horizontal scaling of workers to efficiently handle high-volume tasks while maintaining 99.9% task success rate and minimizing failures.",
+      "Integrated Prometheus to monitor task metrics (success, failure, retries, latency), enabling real-time alerting and proactive issue resolution, improving system observability and incident response time."
     ],
     "summary": "Developed a resilient, distributed async task system in Go with Redis and Asynq, deployed on Kubernetes. Achieved 99.9% reliability with integrated monitoring via Prometheus and DLQ handling."
   },
@@ -111,11 +122,11 @@ export const EXPERIENCES: Experience[] = [
     "role": "Software Engineer Intern",
     "company": "Nagarro",
     "period": "Mar 2023 – Nov 2023",
-    "location": "Gwalior, India",
+    "location": "Noida, India",
     "description": [
-      "Optimized Spring Boot APIs using Hibernate-level caching for 25% performance boost.",
-      "Migrated Oracle SQL workloads to SQL Server, improving execution by 30%.",
-      "Deployed services on AWS (EC2, RDS, S3, VPC) ensuring high uptime."
+      "Developed performant REST APIs using Spring Boot and Hibernate; implemented second-level caching to reduce average response time by 25% under peak load.",
+      "Optimized 50+ Oracle queries by rewriting them into T-SQL for SQL Server, eliminating Cartesian joins, and creating stored procedures and triggers, leading to a 30% improvement in query performance.",
+      "Deployed microservice on AWS, utilizing EC2 for scalable computing, RDS for managed databases, S3 bucket for storage, and VPC for secure networking, ensuring high availability and resilience."
     ],
     "summary": "Boosted Spring Boot API performance by 25% via Hibernate caching and optimized database workloads by 30% through SQL migration. Deployed and managed highly available services on AWS."
   }
@@ -123,7 +134,7 @@ export const EXPERIENCES: Experience[] = [
 
 export const PROJECTS: Project[] = [
   {
-    "title": "BankingPortal-API",
+    "title": "BankingPortal ",
     "category": "Backend",
     "tech": [
       "Spring Boot",
@@ -139,7 +150,7 @@ export const PROJECTS: Project[] = [
     "description": "Secure REST API with role-based access for modern banking operations, including a full frontend with Angular.",
     "link": "https://github.com/abhi9720/BankingPortal-API",
     "liveDemoUrl": "#",
-    "imageUrl": "https://placehold.co/1280x720/1e293b/f1f5f9/png?text=Banking+Portal&font=inter"
+    "imageUrl": "https://repository-images.githubusercontent.com/669542190/53e01f5c-4266-4b89-ad00-5f5e66327aaa"
   },
   {
     "title": "CoderTab",
@@ -156,7 +167,7 @@ export const PROJECTS: Project[] = [
     ],
     "description": "A web-based IDE for multiple languages with custom themes, code execution, and sharing capabilities.",
     "link": "https://github.com/abhi9720/CoderTab",
-    "liveDemoUrl": "#",
+    "liveDemoUrl": "https://codertab.netlify.app",
     "imageUrl": "https://placehold.co/1280x720/1e293b/f1f5f9/png?text=CoderTab&font=inter"
   },
   {
@@ -175,7 +186,8 @@ export const PROJECTS: Project[] = [
     ],
     "description": "A modern Pastebin alternative with a high-performance Go backend and a clean React frontend.",
     "link": "https://github.com/abhi9720/pastebin-clone-go-react",
-    "imageUrl": "https://placehold.co/1280x720/1e293b/f1f5f9/png?text=Pastebin&font=inter"
+    "imageUrl": "https://placehold.co/1280x720/1e293b/f1f5f9/png?text=Pastebin&font=inter",
+    "liveDemoUrl": "http://pasteebin.netlify.app"
   },
   {
     "title": "Postgram",
@@ -193,8 +205,8 @@ export const PROJECTS: Project[] = [
     ],
     "description": "Full-stack social media clone with image uploads, follows, likes, comments, and real-time chat functionality.",
     "link": "https://github.com/abhi9720/Postgram",
-    "liveDemoUrl": "#",
-    "imageUrl": "https://placehold.co/1280x720/1e293b/f1f5f9/png?text=Postgram&font=inter"
+    "liveDemoUrl": "http://postgram-social.netlify.app",
+    "imageUrl": "https://abhi-9720.github.io/img/Postframimg/homepostgram.png"
   },
   {
     "title": "DSA Task Manager",
@@ -213,7 +225,7 @@ export const PROJECTS: Project[] = [
     ],
     "description": "A productivity web app to track DSA problem-solving progress. Features include adding questions, daily revision prompts, a random picker, and Google OAuth.",
     "link": "https://github.com/abhi9720/DSA-TASK-MANAGER",
-    "imageUrl": "https://placehold.co/1280x720/1e293b/f1f5f9/png?text=DSA+Task+Manager&font=inter"
+    "imageUrl": "https://abhi-9720.github.io/img/dtm/login.png"
   },
   {
     "title": "NotePad PWA",
@@ -231,7 +243,24 @@ export const PROJECTS: Project[] = [
     ],
     "description": "An offline-first Progressive Web App for notes, to-dos, and image resizing, installable on any device.",
     "link": "https://github.com/abhi9720/NotePad-PWA",
-    "imageUrl": "https://placehold.co/1280x720/1e293b/f1f5f9/png?text=NotePad+PWA&font=inter"
+    "imageUrl": "https://placehold.co/1280x720/1e293b/f1f5f9/png?text=NotePad+PWA&font=inter",
+    "liveDemoUrl": "#"
+  },
+  {
+    "title": "DevConnector",
+    "category": "Full-Stack",
+    "tech": [
+      "Nodejs",
+      "Mongodb",
+      "Reactjs",
+      "Redux",
+      "Material-UI"
+    ],
+    "tags": [],
+    "description": "Dev Connector is Providing a Platform where developer can ask their doubts, and discuss with other community member .\nAlong with that developer can also maintain their awesome profile with experience, education and github projects",
+    "link": "https://github.com/abhi9720/devconnector-backend",
+    "imageUrl": "https://abhi-9720.github.io/img/dev/discuss.png",
+    "liveDemoUrl": "https://querydiscuser.netlify.app/"
   }
 ];
 
@@ -595,34 +624,39 @@ This is a document about Abhishek “Abhi” Tiwari, a Backend-leaning Full-Stac
 - **Location**: Bangalore / Gwalior, India
 - **Email**: abhishek.nitmn@gmail.com
 - **Phone**: +91-9720409597
-- **Resume Link**: https://drive.google.com/file/d/1UWDYhLGwUqb5UhvK9uq5nN1GkCFxF3FQ/preview
+- **Resume Link**: https: //drive.google.com/file/d/1UWDYhLGwUqb5UhvK9uq5nN1GkCFxF3FQ/preview
 - **Summary**: Backend-leaning full-stack Software Engineer with strong foundations in Golang, Java, Spring Boot, Distributed Systems, and Cloud Architecture. Proven experience handling high-load systems (100K+ req/day), real-time pipelines, and LLM-based applications. Fast adopter of emerging technologies like vector search, RAG, and Kubernetes-based microservices.
 
 ### Social Links
-- **GitHub**: https://github.com/abhi9720
-- **LinkedIn**: https://linkedin.com/in/abhi9720
+- **GitHub**: https: //github.com/abhi9720
+- **LinkedIn**: https: //linkedin.com/in/abhi9720
 - **Email**: mailto:abhishek.nitmn@gmail.com
-- **Portfolio**: https://abhi9720-dev.netlify.app
-- **Notes & Blog**: https://abhisheks-notes.super.site
-- **LeetCode**: https://leetcode.com/abhi9720
-- **DEV.to**: https://dev.to/abhi9720
-- **Medium**: https://medium.com/@Abhishektiwari
+- **Portfolio**: https: //abhi9720-dev.netlify.app
+- **Notes & Blog**: https: //abhisheks-notes.super.site
+- **LeetCode**: https: //leetcode.com/abhi9720
+- **DEV.to**: https: //dev.to/abhi9720
+- **Medium**: https: //medium.com/@Abhishektiwari
 
 ### Key Career Highlights
-- **100K+ req/day**: Handled microservices & achieved a 35% latency drop.
-- **99.9% Reliability**: Built a resilient async distributed task system.
-- **50K+ Daily Users**: Engineered a real-time gamification platform.
+- **100K+ req/day**: Built scalable REST APIs using Spring Boot, optimized with Redis and connection pooling to reduce response time by 35% and improve SLA adherence
+- **20K+ QPS with <100ms latency**: Developed a tenant-aware Global Search API using Elasticsearch and Kafka (via Debezium CDC) to enable real-time, full-text LMS search.
+- **99.9% task success rate**: Designed a fault-tolerant distributed task system in Go using Asynq, Redis, and Kubernetes with Prometheus-based monitoring and DLQ support
 
 ### Professional Experience
 
-- **Role**: Software Development Engineer I
+- **Role**: Software Development Engineer
 - **Company**: PeopleStrong
 - **Period**: Apr 2024 – Present
 - **Location**: Bangalore, India
 - **Details**: 
-  - Built microservices using Java + Spring Boot handling 100K+ requests/day with 35% latency improvement using Redis caching and connection pooling.
-  - Developed a real-time gamification engine and ILT attendance system processing 50K+ daily API calls using Go, Kafka, and Redis.
-  - Designed a secure RBAC system using Spring Security and industry design patterns.
+  - Delivered high-traffic REST APIs via Spring Boot microservice handling 100K+ API requests/day, reducing response time by 35% using Redis caching and connection pooling, improving SLA adherence.
+  - Engineered a gamification engine in Go, Redis, and Kafka, processing over 10,
+000 events per minute to track engagement metrics (course completion, skill achievements), driving user motivation via points, badges, certificates.
+  - Built a scalable Role-Based Access Control (RBAC) system using Strategy, Factory, and Proxy design patterns; enforced permissions via AOP and Spring Security to ensure secure, scalable access control across the LMS.
+  - Engineered a real-time ILT Attendance System handling 50K+ daily API hits, ensuring consistent performance during peak training hours through asynchronous processing and optimized database queries.
+  - Developed a scalable, tenant-aware Global Search API using Spring Boot, Elasticsearch, enabling real-time, full-text search across courses, wikis, certificates, and catalogs with 20K+ QPS and < 100ms latency.
+  - Integrated real-time data synchronization from MySQL to Elasticsearch using Debezium and Kafka for Change Data Capture (CDC), enabling consistent, low-latency indexing with row-based tenant isolation across all entities.
+  - Architected a Course Rating & Review System using Spring Boot, MySQL, and Redis, leveraging write-through caching and lazy cache population to deliver 3× faster read performance and enable consistent, scalable feedback tracking across high-traffic catalogs — contributing to a 28% increase in enrollments.
 
 
 - **Role**: Associate Software Engineer
@@ -630,28 +664,29 @@ This is a document about Abhishek “Abhi” Tiwari, a Backend-leaning Full-Stac
 - **Period**: Nov 2023 – Mar 2024
 - **Location**: Bangalore, India
 - **Details**: 
-  - Created a distributed async task system using Go, Redis, Asynq, integrated DLQ handling and monitoring via Prometheus.
-  - Deployed the system on Kubernetes with auto-scaling, achieving 99.9% success rate.
+  - Designed a scalable distributed task execution system using Go, Redis, and Asynq to process background tasks asynchronously with automatic retries, a Dead-Letter Queue (DLQ), and fault tolerance.
+  - Developed a worker pool system orchestrated with Kubernetes, enabling horizontal scaling of workers to efficiently handle high-volume tasks while maintaining 99.9% task success rate and minimizing failures.
+  - Integrated Prometheus to monitor task metrics (success, failure, retries, latency), enabling real-time alerting and proactive issue resolution, improving system observability and incident response time.
 
 
 - **Role**: Software Engineer Intern
 - **Company**: Nagarro
 - **Period**: Mar 2023 – Nov 2023
-- **Location**: Gwalior, India
+- **Location**: Noida, India
 - **Details**: 
-  - Optimized Spring Boot APIs using Hibernate-level caching for 25% performance boost.
-  - Migrated Oracle SQL workloads to SQL Server, improving execution by 30%.
-  - Deployed services on AWS (EC2, RDS, S3, VPC) ensuring high uptime.
+  - Developed performant REST APIs using Spring Boot and Hibernate; implemented second-level caching to reduce average response time by 25% under peak load.
+  - Optimized 50+ Oracle queries by rewriting them into T-SQL for SQL Server, eliminating Cartesian joins, and creating stored procedures and triggers, leading to a 30% improvement in query performance.
+  - Deployed microservice on AWS, utilizing EC2 for scalable computing, RDS for managed databases, S3 bucket for storage, and VPC for secure networking, ensuring high availability and resilience.
 
 
 ### Projects
 
-- **Title**: BankingPortal-API
+- **Title**: BankingPortal 
 - **Category**: Backend
 - **Technologies**: Spring Boot, JWT, MySQL, Angular
 - **Tags**: #API, #Security, #FinTech
 - **Description**: Secure REST API with role-based access for modern banking operations, including a full frontend with Angular.
-- **Link**: https://github.com/abhi9720/BankingPortal-API
+- **Link**: https: //github.com/abhi9720/BankingPortal-API
 
 
 - **Title**: CoderTab
@@ -659,7 +694,7 @@ This is a document about Abhishek “Abhi” Tiwari, a Backend-leaning Full-Stac
 - **Technologies**: React, Monaco Editor, Tailwind CSS
 - **Tags**: #IDE, #Web-Tools, #Real-Time
 - **Description**: A web-based IDE for multiple languages with custom themes, code execution, and sharing capabilities.
-- **Link**: https://github.com/abhi9720/CoderTab
+- **Link**: https: //github.com/abhi9720/CoderTab
 
 
 - **Title**: Pastebin
@@ -667,7 +702,7 @@ This is a document about Abhishek “Abhi” Tiwari, a Backend-leaning Full-Stac
 - **Technologies**: Go, React, PostgreSQL, Redis
 - **Tags**: #Full-Stack, #High-Performance, #Go
 - **Description**: A modern Pastebin alternative with a high-performance Go backend and a clean React frontend.
-- **Link**: https://github.com/abhi9720/pastebin-clone-go-react
+- **Link**: https: //github.com/abhi9720/pastebin-clone-go-react
 
 
 - **Title**: Postgram
@@ -675,7 +710,7 @@ This is a document about Abhishek “Abhi” Tiwari, a Backend-leaning Full-Stac
 - **Technologies**: React, Express.js, MongoDB, Socket.io
 - **Tags**: #Social-Media, #Real-Time, #MERN
 - **Description**: Full-stack social media clone with image uploads, follows, likes, comments, and real-time chat functionality.
-- **Link**: https://github.com/abhi9720/Postgram
+- **Link**: https: //github.com/abhi9720/Postgram
 
 
 - **Title**: DSA Task Manager
@@ -683,7 +718,7 @@ This is a document about Abhishek “Abhi” Tiwari, a Backend-leaning Full-Stac
 - **Technologies**: Node.js, MongoDB, Cloudinary, Passport-Google-Auth, EJS
 - **Tags**: #Full-Stack, #Productivity, #Node.js
 - **Description**: A productivity web app to track DSA problem-solving progress. Features include adding questions, daily revision prompts, a random picker, and Google OAuth.
-- **Link**: https://github.com/abhi9720/DSA-TASK-MANAGER
+- **Link**: https: //github.com/abhi9720/DSA-TASK-MANAGER
 
 
 - **Title**: NotePad PWA
@@ -691,7 +726,16 @@ This is a document about Abhishek “Abhi” Tiwari, a Backend-leaning Full-Stac
 - **Technologies**: HTML, JavaScript, IndexedDB, PWA
 - **Tags**: #Offline-First, #Web-APIs, #Utility
 - **Description**: An offline-first Progressive Web App for notes, to-dos, and image resizing, installable on any device.
-- **Link**: https://github.com/abhi9720/NotePad-PWA
+- **Link**: https: //github.com/abhi9720/NotePad-PWA
+
+
+- **Title**: DevConnector
+- **Category**: Full-Stack
+- **Technologies**: Nodejs, Mongodb, Reactjs, Redux, Material-UI
+- **Tags**: 
+- **Description**: Dev Connector is Providing a Platform where developer can ask their doubts, and discuss with other community member .
+Along with that developer can also maintain their awesome profile with experience, education and github projects
+- **Link**: https: //github.com/abhi9720/devconnector-backend
 
 
 ### Skills
@@ -736,8 +780,8 @@ My tech radar represents my current view on different technologies.
 #### Techniques\n- CI/CD (adopt): Automating the build, test, and deployment pipeline for faster releases.\n- System Design (trial): Architecting scalable and resilient systems for high-load scenarios.\n- Vector DBs (RAG) (trial): Enhancing LLMs with external knowledge bases for more accurate, context-aware responses using Retrieval-Augmented Generation.\n\n#### Tools\n- Docker (adopt): The de-facto standard for containerizing applications.\n- Git (adopt): Essential for version control and collaborative development.\n- Postman (adopt): My go-to tool for API development, testing, and documentation.\n- Kubernetes (trial): Orchestrating containerized applications at scale. Gaining production experience.\n- Prometheus (trial): For monitoring and alerting in cloud-native environments.\n- LangChain (trial): A framework for developing applications powered by language models.\n\n#### Platforms\n- AWS (EC2, RDS, S3, VPC) (adopt): Core AWS services for compute, storage, database management, and networking.\n- Apache Kafka (adopt): A distributed event streaming platform for high-throughput data pipelines.\n- Redis (adopt): High-performance in-memory data store used for caching and message brokering.\n\n#### Languages And Frameworks\n- Golang (adopt): My primary language for high-performance, concurrent backend services.\n- Java (adopt): A robust, object-oriented language used for building enterprise-grade applications with Spring Boot.\n- Spring Boot (adopt): A powerful framework for creating stand-alone, production-grade Spring based Applications that I use with Java.\n- React.js (adopt): The go-to library for building modern, interactive user interfaces.\n- Tailwind CSS (adopt): A utility-first CSS framework that dramatically speeds up UI development.\n- Node.js (trial): JavaScript runtime for building fast and scalable network applications.\n- Express.js (trial): Minimalist web framework for Node.js, used in several projects for its speed in building APIs.\n- Python (assess): Primarily used for scripting and exploring AI/ML libraries.\n- Angular 10 (hold): Have past experience, but currently focusing on React.js for frontend development.
 
 ### Certifications
-- **Go Design Patterns – Issued Dec 2023**: View at https://www.linkedin.com/in/abhi9720/details/certifications/?entityUrn=urn%3Ali%3Acertification%3A[credential-id-1]
-- **Go Essentials: Concurrency, Connectivity, and High‑Performance Apps – Issued Nov 2023**: View at https://www.linkedin.com/in/abhi9720/details/certifications/?entityUrn=urn%3Ali%3Acertification%3A[credential-id-2]
+- **Go Design Patterns – Issued Dec 2023**: View at https: //www.linkedin.com/learning/certificates/a2a68ce48c6bfcb1d026d6520489947e5090d40bef43a5f236273a283732aaba
+- **Go Essentials: Concurrency, Connectivity, and High‑Performance Apps – Issued Nov 2023**: View at https: //www.linkedin.com/learning/certificates/197ad5e18a4689e92958c06011c00ddbb71e3de21b731b277864fb637696791f
 
 ### Current Interests
 Golang concurrency patterns, LangChain.js & OpenAI APIs, Kubernetes advanced use cases (Helm, ArgoCD), System Design + Real-time distributed systems, AI-enhanced developer tools (LLM + Web IDEs)
