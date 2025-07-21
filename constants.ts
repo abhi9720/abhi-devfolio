@@ -136,18 +136,14 @@ export const PROJECTS: Project[] = [
   {
     "title": "BankingPortal ",
     "category": "Backend",
-    "tech": [
-      "Spring Boot",
-      "JWT",
-      "MySQL",
-      "Angular"
-    ],
+    "tech": ["Java", "Spring Boot", "Spring Security", "MySQL", "Redis", "JWT", "Docker", "Swagger"],
     "tags": [
       "#API",
       "#Security",
-      "#FinTech"
+      "#FinTech",
+      "#Analytics"
     ],
-    "description": "Secure REST API with role-based access for modern banking operations, including a full frontend with Angular.",
+    "description": "Secure banking REST API: account management, deposits, withdrawals, transfers, transaction history. Built with Spring Boot + Spring Security (JWT), Redis caching, Swagger docs, Dockerized. ⭐171 · 🍴137 forks from the community.",
     "link": "https://github.com/abhi9720/BankingPortal-API",
     "liveDemoUrl": "#",
     "imageUrl": "https://repository-images.githubusercontent.com/669542190/53e01f5c-4266-4b89-ad00-5f5e66327aaa"
@@ -155,17 +151,13 @@ export const PROJECTS: Project[] = [
   {
     "title": "CoderTab",
     "category": "Frontend",
-    "tech": [
-      "React",
-      "Monaco Editor",
-      "Tailwind CSS"
-    ],
+    "tech": ["React.js", "Tailwind CSS", "Monaco Editor", "Axios"],
     "tags": [
       "#IDE",
       "#Web-Tools",
       "#Real-Time"
     ],
-    "description": "A web-based IDE for multiple languages with custom themes, code execution, and sharing capabilities.",
+    "description": "Online code editor with Monaco: supports multiple languages, theme switching, live execution preview, JSON/XML/YAML conversion tools, and shareable editor via URL. 8 stars, 5 forks from community.",
     "link": "https://github.com/abhi9720/CoderTab",
     "liveDemoUrl": "https://codertab.netlify.app",
     "imageUrl": "https://placehold.co/1280x720/1e293b/f1f5f9/png?text=CoderTab&font=inter"
@@ -173,18 +165,13 @@ export const PROJECTS: Project[] = [
   {
     "title": "Pastebin",
     "category": "Full-Stack",
-    "tech": [
-      "Go",
-      "React",
-      "PostgreSQL",
-      "Redis"
-    ],
+    "tech": ["Golang", "Gin", "PostgreSQL", "Redis", "JWT", "Docker", "OAuth2 (Google)"],
     "tags": [
       "#Full-Stack",
       "#High-Performance",
       "#Go"
     ],
-    "description": "A modern Pastebin alternative with a high-performance Go backend and a clean React frontend.",
+    "description": "Pastebin-style backend in Go: JWT & Google OAuth2 for auth, PostgreSQL storage, Redis caching, Dockerized deployment. Supports paste create/read/delete with permission checks and performance optimization.",
     "link": "https://github.com/abhi9720/pastebin-clone-go-react",
     "imageUrl": "https://placehold.co/1280x720/1e293b/f1f5f9/png?text=Pastebin&font=inter",
     "liveDemoUrl": "http://pasteebin.netlify.app"
@@ -192,18 +179,13 @@ export const PROJECTS: Project[] = [
   {
     "title": "Postgram",
     "category": "Full-Stack",
-    "tech": [
-      "React",
-      "Express.js",
-      "MongoDB",
-      "Socket.io"
-    ],
+    "tech": ["Node.js", "Express.js", "MongoDB", "React.js", "Socket.io", "Cloudinary", "Bootstrap", "Material UI"],
     "tags": [
       "#Social-Media",
       "#Real-Time",
       "#MERN"
     ],
-    "description": "Full-stack social media clone with image uploads, follows, likes, comments, and real-time chat functionality.",
+    "description": "A social media platform with real-time chat, infinite scroll feed, follow/unfollow system, post creation with image upload (Cloudinary), editable profiles and dynamic interactions via Socket.io and React front-end.",
     "link": "https://github.com/abhi9720/Postgram",
     "liveDemoUrl": "http://postgram-social.netlify.app",
     "imageUrl": "https://abhi-9720.github.io/img/Postframimg/homepostgram.png"
@@ -223,7 +205,7 @@ export const PROJECTS: Project[] = [
       "#Productivity",
       "#Node.js"
     ],
-    "description": "A productivity web app to track DSA problem-solving progress. Features include adding questions, daily revision prompts, a random picker, and Google OAuth.",
+    "description": "A simple browser-based task manager tailored for tracking DSA practice. Users can add tasks, mark them complete, filter by status and due date—designed to boost algorithmic problem-solving productivity.",
     "link": "https://github.com/abhi9720/DSA-TASK-MANAGER",
     "imageUrl": "https://abhi-9720.github.io/img/dtm/login.png"
   },
@@ -241,7 +223,7 @@ export const PROJECTS: Project[] = [
       "#Web-APIs",
       "#Utility"
     ],
-    "description": "An offline-first Progressive Web App for notes, to-dos, and image resizing, installable on any device.",
+    "description": "A Progressive Web App combining multiple utility tools—notepad, task manager, image resizer, news feed—installable on devices, fully functional offline using service workers and local storage. Responsive UI with Tailwind and install prompt support.",
     "link": "https://github.com/abhi9720/NotePad-PWA",
     "imageUrl": "https://placehold.co/1280x720/1e293b/f1f5f9/png?text=NotePad+PWA&font=inter",
     "liveDemoUrl": "#"
@@ -257,10 +239,20 @@ export const PROJECTS: Project[] = [
       "Material-UI"
     ],
     "tags": [],
-    "description": "Dev Connector is Providing a Platform where developer can ask their doubts, and discuss with other community member .\nAlong with that developer can also maintain their awesome profile with experience, education and github projects",
+    "description": "Backend services for a developer social platform: user authentication (JWT), profile CRUD, posting content, following, commenting, and social interaction endpoints. Focused on secure REST APIs and modular architecture for community-driven development.",
     "link": "https://github.com/abhi9720/devconnector-backend",
     "imageUrl": "https://abhi-9720.github.io/img/dev/discuss.png",
     "liveDemoUrl": "https://querydiscuser.netlify.app/"
+  },
+  {
+    "title": "Yelp Camp",
+    "category": "Full-Stack",
+    "tech": ["Node.js", "Express.js", "MongoDB", "Mongoose", "Passport.js", "EJS", "Cloudinary", "Mapbox", "Bootstrap"],
+    "tags": ["Authentication", "CRUD", "Geo-search", "Image Upload", "Reviews"],
+    "description": "Full-stack Node.js MVC web app enabling users to register/login, and perform full CRUD on campgrounds and reviews. Features include geo-mapping with Mapbox, image uploads via Cloudinary, session-based auth, clustered map search, flash-status messages, rating and filtering by rating.",
+    "link": "https://github.com/abhi9720/yelp-camp",
+    "liveDemoUrl": "#",
+    "imageUrl": "https://user-images.githubusercontent.com/68281476/175907737-3879c2c5-c249-4568-9a5f-7454b7055281.png"
   }
 ];
 
